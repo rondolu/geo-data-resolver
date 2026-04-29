@@ -1,0 +1,128 @@
+[
+  {
+    "name": "PARTITION_DATE",
+    "type": "DATE",
+    "mode": "NULLABLE",
+    "description": "設置BQ預設值 CURRENT_DATE()"
+  },
+  {
+    "name": "CUID",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "HES.customer.CUID"
+  },
+  {
+    "name": "SERIAL_NUMBER",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "HES.application.SERIAL_NUMBER"
+  },
+  {
+    "name": "CREATED_AT",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "HES.application.CREATED_AT"
+  },
+  {
+    "name": "GEO_TYPE",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "發查類型：RESIDENCE_ADDRESS / CONTACT_ADDRESS / CONTRACT_COORDINATES"
+  },
+  {
+    "name": "REQUEST_LONGITUDE",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "if CONTRACT_COORDINATES: VMB.apply_info.LONGITUDE，else: NULL。取小數點後4位"
+  },
+  {
+    "name": "REQUEST_LATITUDE",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "if CONTRACT_COORDINATES: VMB.apply_info.LATITUDE，else: NULL。取小數點後4位"
+  },
+  {
+    "name": "REQUEST_ADDRESS",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "if RESIDENCE_ADDRESS: HES.customer.PERMANENT_DETAILED_ADDRESS；elif CONTACT_ADDRESS: HES.customer.CURRENT_DETAILED_ADDRESS；else: NULL"
+  },
+  {
+    "name": "RESPONSE_PLACE_ID",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "取下行 place_id，取不到為 NULL"
+  },
+  {
+    "name": "RESPONSE_ADDRESS",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "取下行 formatted_address，取不到為 NULL"
+  },
+  {
+    "name": "RESPONSE_GLOBAL_CODE",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "取下行 plus_code.global_code，取不到為 NULL"
+  },
+  {
+    "name": "RESPONSE_PLACE_TYPES",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "取下行 types，來源是 LIST，以逗號合併為字串，取不到為 NULL"
+  },
+  {
+    "name": "RESPONSE_LONGITUDE",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "取下行 geometry.location.lng，取不到為 NULL"
+  },
+  {
+    "name": "RESPONSE_LATITUDE",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "取下行 geometry.location.lat，取不到為 NULL"
+  },
+  {
+    "name": "RESPONSE_COUNTRY",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "取下行 address_components，若 types 有 country，取 long_name，取不到為 NULL"
+  },
+  {
+    "name": "RESPONSE_CITY",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "取下行 address_components，若 types 有 administrative_area_level_1，取 long_name，取不到為 NULL"
+  },
+  {
+    "name": "RESPONSE_DISTRICT",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "取下行 address_components，若 types 有 administrative_area_level_2，取 long_name，取不到為 NULL"
+  },
+  {
+    "name": "RESPONSE_WARD",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "取下行 address_components，若 types 有 sublocality_level_1，取 long_name，取不到為 NULL"
+  },
+  {
+    "name": "RESPONSE_STREET",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "取下行 address_components，若 types 有 route，取 long_name，取不到為 NULL"
+  },
+  {
+    "name": "BQ_CREATED_TIME",
+    "type": "DATETIME",
+    "mode": "NULLABLE",
+    "description": "設BQ預設值 CURRENT_DATETIME()"
+  },
+  {
+    "name": "BQ_UPDATED_TIME",
+    "type": "DATETIME",
+    "mode": "NULLABLE",
+    "description": "設BQ預設值 CURRENT_DATETIME()"
+  }
+]
