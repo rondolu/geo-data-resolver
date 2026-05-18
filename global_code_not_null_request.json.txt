@@ -1,0 +1,782 @@
+{
+  "plus_code": {
+    "compound_code": "3PR4+2QX Thoi An Dong, Can Tho, Vietnam",
+    "global_code": "7P273PR4+2QX"
+  },
+  "results": [
+    {
+      "address_components": [
+        {
+          "long_name": "CH Bé Hiền",
+          "short_name": "CH Bé Hiền",
+          "types": [
+            "establishment",
+            "point_of_interest",
+            "transit_station"
+          ]
+        },
+        {
+          "long_name": "Thới An Đông",
+          "short_name": "Thới An Đông",
+          "types": [
+            "political",
+            "sublocality",
+            "sublocality_level_1"
+          ]
+        },
+        {
+          "long_name": "Thới An Đông",
+          "short_name": "Thới An Đông",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Cần Thơ",
+          "short_name": "Cần Thơ",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "CH Bé Hiền, Thới An Đông, Cần Thơ, Vietnam",
+      "geometry": {
+        "location": {
+          "lat": 10.08992,
+          "lng": 105.70731
+        },
+        "location_type": "GEOMETRIC_CENTER",
+        "viewport": {
+          "northeast": {
+            "lat": 10.0912689802915,
+            "lng": 105.7086589802915
+          },
+          "southwest": {
+            "lat": 10.0885710197085,
+            "lng": 105.7059610197085
+          }
+        }
+      },
+      "navigation_points": [
+        {
+          "location": {
+            "latitude": 10.0899438,
+            "longitude": 105.7072942
+          }
+        }
+      ],
+      "place_id": "ChIJu8tlmGiGoDERNDK1hZ-1fmE",
+      "plus_code": {
+        "global_code": "7P273PQ4+XW"
+      },
+      "types": [
+        "establishment",
+        "point_of_interest",
+        "transit_station"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "54/8",
+          "short_name": "54/8",
+          "types": [
+            "street_number"
+          ]
+        },
+        {
+          "long_name": "Nguyễn Chí Thanh",
+          "short_name": "Nguyễn Chí Thanh",
+          "types": [
+            "route"
+          ]
+        },
+        {
+          "long_name": "Thới An Đông",
+          "short_name": "Thới An Đông",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Cần Thơ",
+          "short_name": "Cần Thơ",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        },
+        {
+          "long_name": "900000",
+          "short_name": "900000",
+          "types": [
+            "postal_code"
+          ]
+        }
+      ],
+      "formatted_address": "54/8 Nguyễn Chí Thanh, Thới An Đông, Cần Thơ 900000, Vietnam",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 10.0898339,
+            "lng": 105.7073995
+          },
+          "southwest": {
+            "lat": 10.089741,
+            "lng": 105.707317
+          }
+        },
+        "location": {
+          "lat": 10.0897875,
+          "lng": 105.7073582
+        },
+        "location_type": "ROOFTOP",
+        "viewport": {
+          "northeast": {
+            "lat": 10.0911364302915,
+            "lng": 105.7087072302915
+          },
+          "southwest": {
+            "lat": 10.0884384697085,
+            "lng": 105.7060092697085
+          }
+        }
+      },
+      "navigation_points": [
+        {
+          "location": {
+            "latitude": 10.0898214,
+            "longitude": 105.7073378
+          }
+        }
+      ],
+      "place_id": "ChIJL88gmGiGoDERKjEAUmSdZCU",
+      "types": [
+        "premise",
+        "street_address"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "286",
+          "short_name": "286",
+          "types": [
+            "street_number"
+          ]
+        },
+        {
+          "long_name": "Nguyễn Chí Thanh",
+          "short_name": "Nguyễn Chí Thanh",
+          "types": [
+            "route"
+          ]
+        },
+        {
+          "long_name": "Thới An Đông",
+          "short_name": "Thới An Đông",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Cần Thơ",
+          "short_name": "Cần Thơ",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "286 Nguyễn Chí Thanh, Thới An Đông, Cần Thơ, Vietnam",
+      "geometry": {
+        "location": {
+          "lat": 10.0896402,
+          "lng": 105.7067551
+        },
+        "location_type": "ROOFTOP",
+        "viewport": {
+          "northeast": {
+            "lat": 10.0909891802915,
+            "lng": 105.7081040802915
+          },
+          "southwest": {
+            "lat": 10.0882912197085,
+            "lng": 105.7054061197085
+          }
+        }
+      },
+      "navigation_points": [
+        {
+          "location": {
+            "latitude": 10.0896094,
+            "longitude": 105.7067777
+          }
+        }
+      ],
+      "place_id": "ChIJOSfAu2iGoDERg1fIKF0V4_A",
+      "plus_code": {
+        "compound_code": "3PQ4+VP Thoi An Dong, Can Tho, Vietnam",
+        "global_code": "7P273PQ4+VP"
+      },
+      "types": [
+        "street_address"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "276",
+          "short_name": "276",
+          "types": [
+            "street_number"
+          ]
+        },
+        {
+          "long_name": "Nguyễn Chí Thanh",
+          "short_name": "Nguyễn Chí Thanh",
+          "types": [
+            "route"
+          ]
+        },
+        {
+          "long_name": "Thới An Đông",
+          "short_name": "Thới An Đông",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Cần Thơ",
+          "short_name": "Cần Thơ",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "276 Nguyễn Chí Thanh, Phường Trà An, Thới An Đông, Cần Thơ, Vietnam",
+      "geometry": {
+        "location": {
+          "lat": 10.0898012,
+          "lng": 105.7071891
+        },
+        "location_type": "RANGE_INTERPOLATED",
+        "viewport": {
+          "northeast": {
+            "lat": 10.0911501802915,
+            "lng": 105.7085380802915
+          },
+          "southwest": {
+            "lat": 10.0884522197085,
+            "lng": 105.7058401197085
+          }
+        }
+      },
+      "place_id": "ElEyNzYgTmd1eeG7hW4gQ2jDrSBUaGFuaCwgUGjGsOG7nW5nIFRyw6AgQW4sIFRo4bubaSBBbiDEkMO0bmcsIEPhuqduIFRoxqEsIFZpZXRuYW0iGxIZChQKEgkfPFeYaIagMRFYhm-nm6CXxxCUAg",
+      "types": [
+        "street_address"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "3PR4+2Q",
+          "short_name": "3PR4+2Q",
+          "types": [
+            "plus_code"
+          ]
+        },
+        {
+          "long_name": "Thoi An Dong",
+          "short_name": "Thoi An Dong",
+          "types": [
+            "political",
+            "sublocality",
+            "sublocality_level_1"
+          ]
+        },
+        {
+          "long_name": "Thoi An Dong",
+          "short_name": "Thoi An Dong",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Can Tho",
+          "short_name": "Can Tho",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "3PR4+2Q Thoi An Dong, Can Tho, Vietnam",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 10.090125,
+            "lng": 105.707
+          },
+          "southwest": {
+            "lat": 10.09,
+            "lng": 105.706875
+          }
+        },
+        "location": {
+          "lat": 10.0901,
+          "lng": 105.707
+        },
+        "location_type": "GEOMETRIC_CENTER",
+        "viewport": {
+          "northeast": {
+            "lat": 10.0914114802915,
+            "lng": 105.7082864802915
+          },
+          "southwest": {
+            "lat": 10.0887135197085,
+            "lng": 105.7055885197085
+          }
+        }
+      },
+      "place_id": "GhIJPL1SliEuJEARaJHtfD9tWkA",
+      "plus_code": {
+        "compound_code": "3PR4+2Q Thoi An Dong, Can Tho, Vietnam",
+        "global_code": "7P273PR4+2Q"
+      },
+      "types": [
+        "plus_code"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "264-276",
+          "short_name": "264-276",
+          "types": [
+            "street_number"
+          ]
+        },
+        {
+          "long_name": "Nguyễn Chí Thanh",
+          "short_name": "ĐT917",
+          "types": [
+            "route"
+          ]
+        },
+        {
+          "long_name": "Thới An Đông",
+          "short_name": "Thới An Đông",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Cần Thơ",
+          "short_name": "Cần Thơ",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "264-276 Nguyễn Chí Thanh, Phường Trà An, Thới An Đông, Cần Thơ, Vietnam",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 10.0902587,
+            "lng": 105.7079007
+          },
+          "southwest": {
+            "lat": 10.0898012,
+            "lng": 105.7071891
+          }
+        },
+        "location": {
+          "lat": 10.0900298,
+          "lng": 105.707545
+        },
+        "location_type": "GEOMETRIC_CENTER",
+        "viewport": {
+          "northeast": {
+            "lat": 10.0913789302915,
+            "lng": 105.7088938802915
+          },
+          "southwest": {
+            "lat": 10.0886809697085,
+            "lng": 105.7061959197085
+          }
+        }
+      },
+      "place_id": "ChIJHzxXmGiGoDERWIZvp5ugl8c",
+      "types": [
+        "route"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Thoi An Dong",
+          "short_name": "Thoi An Dong",
+          "types": [
+            "political",
+            "sublocality",
+            "sublocality_level_1"
+          ]
+        },
+        {
+          "long_name": "Thoi An Dong",
+          "short_name": "Thoi An Dong",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Can Tho",
+          "short_name": "Can Tho",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "Thoi An Dong, Can Tho, Vietnam",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 10.1174719,
+            "lng": 105.7364381
+          },
+          "southwest": {
+            "lat": 10.052734,
+            "lng": 105.665484
+          }
+        },
+        "location": {
+          "lat": 10.0851109,
+          "lng": 105.7057792
+        },
+        "location_type": "APPROXIMATE",
+        "viewport": {
+          "northeast": {
+            "lat": 10.1174719,
+            "lng": 105.7364381
+          },
+          "southwest": {
+            "lat": 10.052734,
+            "lng": 105.665484
+          }
+        }
+      },
+      "place_id": "ChIJU_OxFG2GoDERJGh-SVfMRC4",
+      "types": [
+        "political",
+        "sublocality",
+        "sublocality_level_1"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Thoi An Dong",
+          "short_name": "Thoi An Dong",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Thoi An Dong",
+          "short_name": "Thoi An Dong",
+          "types": [
+            "political",
+            "sublocality",
+            "sublocality_level_1"
+          ]
+        },
+        {
+          "long_name": "Can Tho",
+          "short_name": "Can Tho",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "Thoi An Dong, Can Tho, Vietnam",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 10.1174719,
+            "lng": 105.7364381
+          },
+          "southwest": {
+            "lat": 10.052734,
+            "lng": 105.665484
+          }
+        },
+        "location": {
+          "lat": 10.0753984,
+          "lng": 105.6823124
+        },
+        "location_type": "APPROXIMATE",
+        "viewport": {
+          "northeast": {
+            "lat": 10.1174719,
+            "lng": 105.7364381
+          },
+          "southwest": {
+            "lat": 10.052734,
+            "lng": 105.665484
+          }
+        }
+      },
+      "place_id": "ChIJaeE-VOKFoDER4kMo4SvNxrU",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Can Tho",
+          "short_name": "Can Tho",
+          "types": [
+            "locality",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Ninh Kiều",
+          "short_name": "Ninh Kiều",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Can Tho",
+          "short_name": "Can Tho",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "Can Tho, Ninh Kiều, Can Tho, Vietnam",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 10.324991,
+            "lng": 106.301508
+          },
+          "southwest": {
+            "lat": 9.243663,
+            "lng": 105.225759
+          }
+        },
+        "location": {
+          "lat": 10.0451618,
+          "lng": 105.7468535
+        },
+        "location_type": "APPROXIMATE",
+        "viewport": {
+          "northeast": {
+            "lat": 10.324991,
+            "lng": 106.301508
+          },
+          "southwest": {
+            "lat": 9.243663,
+            "lng": 105.225759
+          }
+        }
+      },
+      "place_id": "ChIJt-3jbZ9ioDERWbYg-9sJf1I",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Can Tho",
+          "short_name": "Can Tho",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "Can Tho, Vietnam",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 10.324991,
+            "lng": 106.301508
+          },
+          "southwest": {
+            "lat": 9.243663,
+            "lng": 105.225759
+          }
+        },
+        "location": {
+          "lat": 10.1547425,
+          "lng": 105.5005483
+        },
+        "location_type": "APPROXIMATE",
+        "viewport": {
+          "northeast": {
+            "lat": 10.324991,
+            "lng": 106.301508
+          },
+          "southwest": {
+            "lat": 9.243663,
+            "lng": 105.225759
+          }
+        }
+      },
+      "place_id": "ChIJzYJzkp9ioDERZ-wJEdljpHI",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "Vietnam",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 23.3926504,
+            "lng": 109.6765
+          },
+          "southwest": {
+            "lat": 8.1952001,
+            "lng": 102.1439665
+          }
+        },
+        "location": {
+          "lat": 14.058324,
+          "lng": 108.277199
+        },
+        "location_type": "APPROXIMATE",
+        "viewport": {
+          "northeast": {
+            "lat": 23.3926504,
+            "lng": 109.6765
+          },
+          "southwest": {
+            "lat": 8.1952001,
+            "lng": 102.1439665
+          }
+        }
+      },
+      "place_id": "ChIJXx5qc016FTERvmL-4smwO7A",
+      "types": [
+        "country",
+        "political"
+      ]
+    }
+  ],
+  "status": "OK"
+}

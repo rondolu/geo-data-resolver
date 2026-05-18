@@ -104,3 +104,22 @@ def test_request_denied_raises_immediately(_mock_key):
         client.get_geocoding(address="abc")
 
     assert client.session.get.call_count == 1
+
+
+@patch("infrastructure.google_maps_client.SecretManagerService.get_api_key", return_value="dummy-key")
+def test_geocoding_request_always_includes_fulfill_on_zero_results(_mock_key):
+    """驗證 Geocoding request 皆包含 fulfill_on_zero_results=true 參數。"""
+    client = GoogleMapsAPIClient()
+    client.session = MagicMock()
+    client.session.get = MagicMock(return_value=FakeResponse(payload={"status": "OK", "results": []}))
+
+    client.get_geocoding(address="abc")
+    client.get_geocoding(latlng="10.1,105.7")
+
+    first_params = client.session.get.call_args_list[0].kwargs["params"]
+    second_params = client.session.get.call_args_list[1].kwargs["params"]
+
+    assert first_params["fulfill_on_zero_results"] == "true"
+    assert first_params["address"] == "abc"
+    assert second_params["fulfill_on_zero_results"] == "true"
+    assert second_params["latlng"] == "10.1,105.7"

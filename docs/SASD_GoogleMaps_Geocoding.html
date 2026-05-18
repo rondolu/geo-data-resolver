@@ -1,0 +1,1967 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Maps Geocoding API SASD</title>
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --bg-strong: #efe2cf;
+      --paper: rgba(255, 250, 242, 0.84);
+      --paper-strong: #fffaf2;
+      --ink: #19313f;
+      --ink-soft: #546977;
+      --line: rgba(25, 49, 63, 0.12);
+      --accent: #1e7f78;
+      --accent-strong: #0f5e59;
+      --accent-warm: #d47c42;
+      --ok: #2b8a57;
+      --warn: #b36a09;
+      --danger: #bb3f3f;
+      --shadow: 0 18px 42px rgba(28, 44, 56, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --sidebar-width: 290px;
+      --mono: "Cascadia Code", "Consolas", monospace;
+      --sans: "Aptos", "Segoe UI Variable", "Noto Sans TC", sans-serif;
+      --serif: "Georgia", "Noto Serif TC", serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(30, 127, 120, 0.16), transparent 28%),
+        radial-gradient(circle at 85% 8%, rgba(212, 124, 66, 0.16), transparent 25%),
+        linear-gradient(180deg, #f7f1e7 0%, #f4efe6 100%);
+    }
+
+    a {
+      color: var(--accent-strong);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(240px, var(--sidebar-width)) minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 22px;
+      background: rgba(25, 49, 63, 0.94);
+      color: #f6efe2;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      overflow-y: auto;
+    }
+
+    .brand {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .brand small {
+      color: rgba(246, 239, 226, 0.74);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    .sidebar-card {
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 20px;
+    }
+
+    .sidebar-card strong,
+    .sidebar nav strong {
+      display: block;
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(246, 239, 226, 0.72);
+      margin-bottom: 10px;
+    }
+
+    .sidebar-card p,
+    .sidebar-card li {
+      margin: 0;
+      color: rgba(246, 239, 226, 0.9);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .sidebar-card ul {
+      padding-left: 18px;
+      margin: 0;
+    }
+
+    .toc {
+      display: grid;
+      gap: 10px;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: rgba(246, 239, 226, 0.92);
+      font-size: 14px;
+      line-height: 1.5;
+      padding: 8px 10px;
+      border-radius: 10px;
+      transition: background-color 160ms ease, transform 160ms ease;
+    }
+
+    .toc a:hover,
+    .toc a:focus-visible {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(3px);
+      outline: none;
+    }
+
+    .content {
+      padding: 34px;
+    }
+
+    .hero,
+    .section,
+    .appendix details,
+    .glossary-grid,
+    .stats,
+    .timeline,
+    .callout-grid {
+      width: 100%;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 38px;
+      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(135deg, rgba(255, 250, 242, 0.94), rgba(239, 226, 207, 0.94)),
+        linear-gradient(120deg, rgba(30, 127, 120, 0.14), rgba(212, 124, 66, 0.12));
+      border: 1px solid rgba(25, 49, 63, 0.08);
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      right: -40px;
+      top: -70px;
+      background: radial-gradient(circle, rgba(30, 127, 120, 0.26), transparent 70%);
+      pointer-events: none;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(25, 49, 63, 0.06);
+      color: var(--accent-strong);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .hero h2 {
+      position: relative;
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(32px, 4vw, 52px);
+      line-height: 1.05;
+      max-width: 12ch;
+    }
+
+    .hero p {
+      position: relative;
+      max-width: 72ch;
+      margin: 16px 0 0;
+      font-size: 17px;
+      line-height: 1.8;
+      color: var(--ink-soft);
+    }
+
+    .hero-meta {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 26px;
+    }
+
+    .meta-card,
+    .stat-card,
+    .step-card,
+    .callout,
+    .glossary-card {
+      background: var(--paper);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .meta-card {
+      padding: 18px;
+    }
+
+    .meta-card span {
+      display: block;
+      font-size: 12px;
+      color: var(--ink-soft);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .meta-card strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    .section {
+      margin-top: 28px;
+      padding: 30px;
+      background: rgba(255, 250, 242, 0.78);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+    }
+
+    .section h3 {
+      margin: 0 0 10px;
+      font-family: var(--serif);
+      font-size: 32px;
+      line-height: 1.2;
+    }
+
+    .section > p,
+    .section li,
+    .section blockquote {
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--ink-soft);
+    }
+
+    .section h4 {
+      margin: 24px 0 12px;
+      font-size: 22px;
+      line-height: 1.3;
+    }
+
+    .section h5 {
+      margin: 18px 0 10px;
+      font-size: 18px;
+      line-height: 1.3;
+      color: var(--accent-strong);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(30, 127, 120, 0.1);
+      color: var(--accent-strong);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .stats,
+    .callout-grid,
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .stat-card,
+    .callout,
+    .glossary-card {
+      padding: 20px;
+    }
+
+    .stat-card strong {
+      display: block;
+      font-size: 30px;
+      font-family: var(--serif);
+      color: var(--accent-strong);
+      margin-bottom: 8px;
+    }
+
+    .stat-card span,
+    .callout strong,
+    .glossary-card strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    .stat-card p,
+    .callout p,
+    .glossary-card p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--ink-soft);
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .step-card {
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step-card::before {
+      content: attr(data-step);
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      font-size: 50px;
+      font-family: var(--serif);
+      color: rgba(30, 127, 120, 0.08);
+      line-height: 1;
+    }
+
+    .step-card strong {
+      position: relative;
+      display: block;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .step-card p {
+      position: relative;
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--ink-soft);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      background: var(--paper-strong);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    th {
+      background: rgba(25, 49, 63, 0.06);
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    code,
+    pre {
+      font-family: var(--mono);
+    }
+
+    :not(pre) > code {
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: rgba(25, 49, 63, 0.08);
+      font-size: 0.95em;
+    }
+
+    pre {
+      margin: 14px 0 0;
+      padding: 18px;
+      background: #1a2c35;
+      color: #eaf5f2;
+      border-radius: 18px;
+      overflow: auto;
+      font-size: 13px;
+      line-height: 1.65;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+
+    blockquote {
+      margin: 14px 0;
+      padding: 14px 18px;
+      border-left: 4px solid var(--accent-warm);
+      background: rgba(212, 124, 66, 0.08);
+      border-radius: 0 14px 14px 0;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    .status-ok { color: var(--ok); font-weight: 700; }
+    .status-warn { color: var(--warn); font-weight: 700; }
+    .status-danger { color: var(--danger); font-weight: 700; }
+
+    .appendix details {
+      margin-top: 16px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: rgba(255, 250, 242, 0.88);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .appendix summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 18px 20px;
+      font-size: 18px;
+      font-weight: 700;
+      background: rgba(25, 49, 63, 0.04);
+    }
+
+    .appendix summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .appendix-body {
+      padding: 0 20px 20px;
+    }
+
+    .footer-note {
+      margin-top: 28px;
+      padding: 18px 22px;
+      border-radius: 18px;
+      background: rgba(25, 49, 63, 0.92);
+      color: rgba(246, 239, 226, 0.92);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 1180px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+        height: auto;
+      }
+
+      .hero-meta,
+      .timeline {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .content {
+        padding: 18px;
+      }
+
+      .hero,
+      .section {
+        padding: 22px;
+      }
+
+      .hero-meta,
+      .stats,
+      .callout-grid,
+      .timeline,
+      .glossary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h2 {
+        max-width: none;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <small>SA / SD Document</small>
+        <h1>Google Maps Geocoding API</h1>
+      </div>
+
+      <div class="sidebar-card">
+        <strong>文件定位</strong>
+        <p>越南消金地理空間數據發查設計文件，聚焦三類 geocoding 批次、雲端資源配置與非功能性需求。</p>
+      </div>
+
+      <div class="sidebar-card">
+        <strong>快速重點</strong>
+        <ul>
+          <li>每日 01:00 VNT 由 Cloud Scheduler 觸發 Cloud Run Job</li>
+          <li>三段流程：CONTACT_ADDRESS、RESIDENCE_ADDRESS、CONTRACT_COORDINATES</li>
+          <li>結果落地至 GCS 與 RAW_EDEP_DATASET.GEOCODING</li>
+        </ul>
+      </div>
+
+      <nav>
+        <strong>章節導覽</strong>
+        <div class="toc">
+          <a href="#overview">總覽</a>
+          <a href="#revision-history">修訂履歷</a>
+          <a href="#chapter-1">第一章 功能概述</a>
+          <a href="#chapter-2">第二章 API 規格</a>
+          <a href="#chapter-3">第三章 處理邏輯</a>
+          <a href="#chapter-4">第四章 雲端資源配置與設計</a>
+          <a href="#chapter-5">第五章 非功能性需求設計</a>
+          <a href="#glossary">附錄零 術語表</a>
+          <a href="#ddl">附錄零 b BigQuery Schema DDL</a>
+          <a href="#appendix">第六章 附錄</a>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <section class="hero" id="overview">
+        <div class="pill-row">
+          <span class="pill">OVS-LX-VDO-01</span>
+          <span class="pill">內部使用文件</span>
+          <span class="pill">Geocoding API 設計</span>
+        </div>
+        <h2>讓 SA 文件更好讀，也更接近實際執行流程。</h2>
+        <p>這份 HTML 版本以原始 Markdown 為基礎重組版面。上方先提供決策者能快速掌握的摘要，接著保留完整 SA / SD 內容、表格、SQL 與 Python 程式碼片段，方便開發、分析與審閱。</p>
+        <div class="hero-meta">
+          <div class="meta-card">
+            <span>文件類型</span>
+            <strong>SA / SD 系統分析與設計文件</strong>
+          </div>
+          <div class="meta-card">
+            <span>主要服務</span>
+            <strong>Google Maps Geocoding API</strong>
+          </div>
+          <div class="meta-card">
+            <span>執行模式</span>
+            <strong>Cloud Run Job + 排程批次</strong>
+          </div>
+          <div class="meta-card">
+            <span>資料落點</span>
+            <strong>GCS + BigQuery EDEP</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="revision-history">
+        <span class="eyebrow">Document Control</span>
+        <h3>文件制定／修訂履歷</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>制定／修訂版次</th>
+              <th>制定／修訂日期</th>
+              <th>制定／修訂說明</th>
+              <th>作者</th>
+              <th>備註</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>v0.1</td>
+              <td>2026/02/04</td>
+              <td>初版</td>
+              <td>Denny</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>v0.2</td>
+              <td>2026/02/12</td>
+              <td>調整並完善規格</td>
+              <td>Tom</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section">
+        <span class="eyebrow">Executive Summary</span>
+        <h3>快速掌握這份設計文件</h3>
+        <div class="stats">
+          <article class="stat-card">
+            <strong>3</strong>
+            <span>發查類型</span>
+            <p>通訊地址、戶籍地址、簽約經緯度，各自對應不同輸入欄位與更新 SQL。</p>
+          </article>
+          <article class="stat-card">
+            <strong>2</strong>
+            <span>資料落點</span>
+            <p>原始 JSON 存 GCS，結構化欄位寫入 RAW_EDEP_DATASET.GEOCODING。</p>
+          </article>
+          <article class="stat-card">
+            <strong>1200 QPM</strong>
+            <span>目前常用節流值</span>
+            <p>程式使用 QPM 節流（min_interval = 60 / qpm_limit），並依環境設定調整。</p>
+          </article>
+        </div>
+        <div class="callout-grid">
+          <article class="callout">
+            <strong>業務目標</strong>
+            <p>將地址與座標標準化，提供風險分析與團夥詐欺識別依據。</p>
+          </article>
+          <article class="callout">
+            <strong>運作模式</strong>
+            <p>由排程每日啟動，批次查詢 BigQuery 後逐筆呼叫 Geocoding API。</p>
+          </article>
+          <article class="callout">
+            <strong>設計特點</strong>
+            <p>文件同時覆蓋功能規格、雲端資源需求、錯誤策略與 SQL 附錄。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="chapter-1">
+        <span class="eyebrow">Chapter 1</span>
+        <h3>第一章、功能概述 (SA)</h3>
+
+        <h4>1.1 專案 / 功能說明</h4>
+        <p><strong>API 設計目的與業務應用場景</strong></p>
+        <p>串接 Google Maps 地理空間數據服務，作為越南消金業務後續風險分析使用。本階段目標在於透過 Google Maps API 將地址轉換成經緯度定位、經緯度轉換成地址定位，進一步識別高風險、違約率偏高的用戶群所屬詳細地點，並以此作為後續驗證團夥詐欺行為的重要依據。</p>
+
+        <h5>關聯資料來源</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>資料來源</th>
+              <th>說明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Google Maps Geocoding API</td>
+              <td>外部地理空間服務，提供地址 ↔ 座標轉換</td>
+            </tr>
+            <tr>
+              <td>BigQuery - HES</td>
+              <td><code>RAW_HES_DATASET.APPLICATION</code>、<code>RAW_HES_DATASET.CUSTOMER</code>，存有用戶申貸資訊</td>
+            </tr>
+            <tr>
+              <td>BigQuery - VMB</td>
+              <td><code>RAW_VMB_DATASET.APPLY_INFO</code>，存有申貸時的簽約經緯度</td>
+            </tr>
+            <tr>
+              <td>BigQuery - EDEP</td>
+              <td><code>RAW_EDEP_DATASET.GEOCODING</code>，本服務的發查結果儲存目的地</td>
+            </tr>
+            <tr>
+              <td>GCS</td>
+              <td><code>gs://ovslxvdo01-{env}-rawdata-api/GOOGLEMAPS/GEOCODING/</code>，原始 JSON 回應儲存位置</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p><strong>服務性質</strong></p>
+        <p>內部使用，主要服務對象為東南亞數據團隊開發人員與風險分析師。</p>
+
+        <h4>1.2 系統 / 服務流程</h4>
+        <div class="timeline">
+          <article class="step-card" data-step="1">
+            <strong>取未發查資料</strong>
+            <p>從 BigQuery HES / VMB 取出 CONTACT_ADDRESS、RESIDENCE_ADDRESS、CONTRACT_COORDINATES 三類候選資料。</p>
+          </article>
+          <article class="step-card" data-step="2">
+            <strong>呼叫 Geocoding API</strong>
+            <p>地址用 <code>address</code>，座標用 <code>latlng</code>，逐筆發查 Google Maps Geocoding API。</p>
+          </article>
+          <article class="step-card" data-step="3">
+            <strong>下行檢核</strong>
+            <p>驗證 status、formatted_address、lat/lng 與 address_components 等必要欄位。</p>
+          </article>
+          <article class="step-card" data-step="4">
+            <strong>儲存結果</strong>
+            <p>原始 JSON 存 GCS，結構化欄位寫入 RAW_EDEP_DATASET.GEOCODING。</p>
+          </article>
+          <article class="step-card" data-step="5">
+            <strong>更新已發查紀錄</strong>
+            <p>依 GEO_TYPE 更新去重紀錄，避免下一批次重複發查。</p>
+          </article>
+        </div>
+
+        <pre><code>Cloud Run Job (排程觸發，每日執行)
+1. 從 BigQuery HES / VMB 取出未發查的客戶資料
+   - 通訊地址 (CONTACT_ADDRESS)
+   - 戶籍地址 (RESIDENCE_ADDRESS)
+   - 簽約經緯度 (CONTRACT_COORDINATES)
+2. 呼叫 Google Maps Geocoding API
+   - address → latlng
+   - latlng → address
+3. 下行檢核（格式驗證、必填欄位補全）
+4. 儲存結果
+   - GCS：原始 JSON 格式
+   - BigQuery：RAW_EDEP_DATASET.GEOCODING
+5. 更新已發查紀錄（避免重複發查）</code></pre>
+      </section>
+
+      <section class="section" id="chapter-2">
+        <span class="eyebrow">Chapter 2</span>
+        <h3>第二章、API 規格 (SA)</h3>
+
+        <h4>2.1 基本資訊</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>項目</th>
+              <th>內容</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>API 名稱</td>
+              <td>Google Maps : Geocoding API</td>
+            </tr>
+            <tr>
+              <td>API URI</td>
+              <td><code>https://maps.googleapis.com/maps/api/geocode/json?</code></td>
+            </tr>
+            <tr>
+              <td>HTTP Method</td>
+              <td>GET</td>
+            </tr>
+            <tr>
+              <td>Content-Type</td>
+              <td>application/json</td>
+            </tr>
+            <tr>
+              <td>驗證方式</td>
+              <td>API Key（由 GCP Secret Manager 管理）</td>
+            </tr>
+            <tr>
+              <td>功能描述</td>
+              <td>地址 ↔ 座標轉換、取得詳細地址定位</td>
+            </tr>
+            <tr>
+              <td>API 官方文件</td>
+              <td><a href="https://developers.google.com/maps/documentation/geocoding/requests-geocoding?hl=zh-tw" target="_blank" rel="noreferrer">Google Maps Geocoding API 說明</a></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>2.2 上行 / 請求 API 規格</h4>
+        <blockquote><strong>注意：</strong> <code>address</code> 與 <code>latlng</code> 二擇一必填。</blockquote>
+        <table>
+          <thead>
+            <tr>
+              <th>LVL</th>
+              <th>欄位名稱</th>
+              <th>資料型態</th>
+              <th>必填</th>
+              <th>最大長度</th>
+              <th>說明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Content-Type</td>
+              <td>String</td>
+              <td>N</td>
+              <td>—</td>
+              <td>預設為 <code>application/json</code></td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>key</td>
+              <td>String</td>
+              <td>Y</td>
+              <td>—</td>
+              <td>Google API 金鑰（由 Secret Manager 注入）</td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>fulfill_on_zero_results</td>
+              <td>String</td>
+              <td>N</td>
+              <td>—</td>
+              <td>固定帶 true，使回應包含 root-level 結構資訊</td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>latlng</td>
+              <td>String</td>
+              <td>條件必填</td>
+              <td>—</td>
+              <td>經緯度，格式為 <code>"latitude,longitude"</code></td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>address</td>
+              <td>String</td>
+              <td>條件必填</td>
+              <td>—</td>
+              <td>要查詢的地址（URL encoded）</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>2.3 上行 / 請求 API 範例</h4>
+        <h5>輸入經緯度（座標 → 地址）</h5>
+        <pre><code>GET https://maps.googleapis.com/maps/api/geocode/json?latlng={latlng}&amp;key={API_KEY}&amp;fulfill_on_zero_results=true</code></pre>
+        <pre><code>GET https://maps.googleapis.com/maps/api/geocode/json?latlng=10.8231,106.6297&amp;key=YOUR_API_KEY</code></pre>
+        <h5>輸入地址（地址 → 座標）</h5>
+        <pre><code>GET https://maps.googleapis.com/maps/api/geocode/json?address={address}&amp;key={API_KEY}&amp;fulfill_on_zero_results=true</code></pre>
+        <pre><code>GET https://maps.googleapis.com/maps/api/geocode/json?address=268+Ly+Thuong+Kiet,+Ho+Chi+Minh&amp;key=YOUR_API_KEY</code></pre>
+
+        <h4>2.4 下行 / 回應 API 規格</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>LVL</th>
+              <th>欄位名稱</th>
+              <th>資料型態</th>
+              <th>說明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>status</td><td>string</td><td>請求狀態代碼（見 2.6）</td></tr>
+            <tr><td>1</td><td>plus_code</td><td>dict</td><td>Root-level Plus Code 資訊</td></tr>
+            <tr><td>2</td><td>compound_code</td><td>string</td><td>Root-level Plus Code（區域碼，可選）</td></tr>
+            <tr><td>2</td><td>global_code</td><td>string</td><td>Root-level 全域 Plus Code（優先取值來源）</td></tr>
+            <tr><td>1</td><td>results</td><td>list</td><td>Geocoding 結果列表</td></tr>
+            <tr><td>2</td><td>place_id</td><td>string</td><td>地點唯一識別碼</td></tr>
+            <tr><td>2</td><td>formatted_address</td><td>string</td><td>完整格式化地址</td></tr>
+            <tr><td>2</td><td>types</td><td>list</td><td>地點類型列表</td></tr>
+            <tr><td>2</td><td>address_components</td><td>list</td><td>地址組成元件列表</td></tr>
+            <tr><td>2</td><td>long_name</td><td>string</td><td>地址元件全名</td></tr>
+            <tr><td>2</td><td>short_name</td><td>string</td><td>地址元件縮寫</td></tr>
+            <tr><td>2</td><td>types</td><td>list</td><td>元件類型（如 <code>country</code>、<code>administrative_area_level_1</code>）</td></tr>
+            <tr><td>2</td><td>geometry</td><td>dict</td><td>地理幾何資訊</td></tr>
+            <tr><td>3</td><td>location</td><td>dict</td><td>座標位置</td></tr>
+            <tr><td>4</td><td>lat</td><td>float</td><td>緯度</td></tr>
+            <tr><td>4</td><td>lng</td><td>float</td><td>經度</td></tr>
+            <tr><td>2</td><td>plus_code</td><td>dict</td><td>Result-level Plus Code 資訊（fallback 用）</td></tr>
+            <tr><td>3</td><td>global_code</td><td>string</td><td>Result-level 全域 Plus Code</td></tr>
+          </tbody>
+        </table>
+
+        <h4>2.5 下行 / 回應 API 範例</h4>
+        <pre><code class="language-json">{
+  "plus_code": {
+    "compound_code": "3PR4+2QX Thoi An Dong, Can Tho, Vietnam",
+    "global_code": "7P273PR4+2QX"
+  },
+  "results": [
+    {
+      "address_components": [
+        {
+          "long_name": "CH Bé Hiền",
+          "short_name": "CH Bé Hiền",
+          "types": ["establishment", "point_of_interest", "transit_station"]
+        },
+        {
+          "long_name": "Thới An Đông",
+          "short_name": "Thới An Đông",
+          "types": ["political", "sublocality", "sublocality_level_1"]
+        },
+        {
+          "long_name": "Cần Thơ",
+          "short_name": "Cần Thơ",
+          "types": ["administrative_area_level_1", "political"]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": ["country", "political"]
+        }
+      ],
+      "formatted_address": "CH Bé Hiền, Thới An Đông, Cần Thơ, Vietnam",
+      "geometry": {
+        "location": {
+          "lat": 10.08992,
+          "lng": 105.70731
+        },
+        "location_type": "GEOMETRIC_CENTER"
+      },
+      "place_id": "ChIJu8tlmGiGoDERNDK1hZ-1fmE",
+      "plus_code": {
+        "global_code": "7P273PQ4+XW"
+      },
+      "types": ["establishment", "point_of_interest", "transit_station"]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "54/8",
+          "short_name": "54/8",
+          "types": ["street_number"]
+        },
+        {
+          "long_name": "Nguyễn Chí Thanh",
+          "short_name": "Nguyễn Chí Thanh",
+          "types": ["route"]
+        },
+        {
+          "long_name": "Cần Thơ",
+          "short_name": "Cần Thơ",
+          "types": ["administrative_area_level_1", "political"]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": ["country", "political"]
+        }
+      ],
+      "formatted_address": "54/8 Nguyễn Chí Thanh, Thới An Đông, Cần Thơ 900000, Vietnam",
+      "geometry": {
+        "location": {
+          "lat": 10.0897875,
+          "lng": 105.7073582
+        },
+        "location_type": "ROOFTOP"
+      },
+      "place_id": "ChIJL88gmGiGoDERKjEAUmSdZCU",
+      "types": ["premise", "street_address"]
+    }
+  ],
+  "status": "OK"
+}</code></pre>
+
+        <h4>2.6 處理結果代碼</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>RETURNCODE</th>
+              <th>RETURNDESC</th>
+              <th>回傳時機</th>
+              <th>建議處理方式</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="status-ok">OK</span></td>
+              <td>請求成功，回傳有效結果</td>
+              <td>正常回應</td>
+              <td>繼續儲存下行</td>
+            </tr>
+            <tr>
+              <td><span class="status-warn">ZERO_RESULTS</span></td>
+              <td>查詢成功，但沒有符合的結果</td>
+              <td>地址無效或過於模糊</td>
+              <td>仍寫入 GCS 原始回應與 BigQuery 基本欄位（回應欄位為 NULL），供後續追蹤</td>
+            </tr>
+            <tr>
+              <td><span class="status-warn">OVER_QUERY_LIMIT</span></td>
+              <td>已超過配額限制</td>
+              <td>可能以 HTTP 429 或 payload status 呈現</td>
+              <td>HTTP 429 走指數退避重試（最多 3 次）；若為 payload status 則視為非 OK 回應並跳過</td>
+            </tr>
+            <tr>
+              <td><span class="status-danger">REQUEST_DENIED</span></td>
+              <td>請求被拒絕，通常是 API Key 無效或權限不足</td>
+              <td>API Key 異常</td>
+              <td>立即告警（PagerDuty / Slack），停止批次</td>
+            </tr>
+            <tr>
+              <td><span class="status-warn">INVALID_REQUEST</span></td>
+              <td>請求參數錯誤或缺少必要欄位</td>
+              <td>上行資料缺少 address 或 latlng</td>
+              <td>記錄 log，跳過該筆，繼續下一筆</td>
+            </tr>
+            <tr>
+              <td><span class="status-warn">UNKNOWN_ERROR</span></td>
+              <td>伺服器端錯誤，請稍後重試</td>
+              <td>Google 服務端臨時異常</td>
+              <td>固定間隔重試（30 秒），最多 3 次；重試耗盡後中止批次</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="chapter-3">
+        <span class="eyebrow">Chapter 3</span>
+        <h3>第三章、處理邏輯 (SA)</h3>
+
+        <h4>3.1 程式處理流程</h4>
+        <p>執行 Geocoding 批次作業時，判斷邏輯如下。</p>
+
+        <h5>Step 1 — 取得客戶基本資訊</h5>
+        <p>取出所有客戶資訊，以下欄位皆不能為 <code>NULL</code> 或字串 <code>"null"</code>，且每筆皆取最新資料。</p>
+        <table>
+          <thead>
+            <tr>
+              <th>資料類型</th>
+              <th>來源欄位</th>
+              <th>發查類型（GEO_TYPE）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>通訊地址</td><td><code>HES.customer.CURRENT_DETAILED_ADDRESS</code></td><td><code>CONTACT_ADDRESS</code></td></tr>
+            <tr><td>戶籍地址</td><td><code>HES.customer.PERMANENT_DETAILED_ADDRESS</code></td><td><code>RESIDENCE_ADDRESS</code></td></tr>
+            <tr><td>簽約經緯度</td><td><code>VMB.apply_info.LONGITUDE</code> / <code>VMB.apply_info.LATITUDE</code></td><td><code>CONTRACT_COORDINATES</code></td></tr>
+            <tr><td>申貸序號</td><td><code>HES.application.SERIAL_NUMBER</code></td><td>—</td></tr>
+            <tr><td>客戶 ID</td><td><code>HES.customer.CUID</code></td><td>—</td></tr>
+          </tbody>
+        </table>
+
+        <h5>Step 2 — 篩選未發查資料</h5>
+        <p>目前程式預設由 <code>GeocodingBatchProcessService.STAGE_SQL</code> 指向 <code>sql/test_geocoding_query_*.sql</code> 載入資料（測試名單），每批最多 3 筆；正式查詢版為 <code>sql/geocoding_query_*.sql</code>。</p>
+
+        <h5>Step 3 — 呼叫 Google Maps Geocoding API</h5>
+        <ul>
+          <li>通訊地址 / 戶籍地址：以 <code>address</code> 欄位發查。</li>
+          <li>簽約經緯度：以 <code>latlng</code> 欄位發查，格式為 <code>latitude,longitude</code>，使用來源原始精度。</li>
+        </ul>
+
+        <h5>Step 4 — 更新已發查資料</h5>
+        <p>每批次都會先執行對應 update SQL：<code>contact_address</code>、<code>residence_address</code>；<code>contract_coordinates</code> update SQL 目前為註解停用狀態。</p>
+
+        <h4>3.2 檢核下行</h4>
+        <p>主要驗證項目如下：</p>
+        <ul>
+          <li><code>status</code> 為 <code>OK</code> 才進行儲存。</li>
+          <li><code>geometry.location.lat</code> / <code>lng</code> 必須為合法的浮點數。</li>
+          <li><code>formatted_address</code> 不得為空字串。</li>
+          <li><code>address_components</code> 必須包含至少一個元件。</li>
+        </ul>
+
+        <h4>3.3 儲存下行 (GCS)</h4>
+        <p>每個 Geocoding 發查完的原始 JSON 回應，儲存至下列 GCS 路徑：</p>
+        <pre><code>gs://ovslxvdo01-{env}-rawdata-api/GOOGLEMAPS/GEOCODING/{data_date}_{serial_number}.json</code></pre>
+        <table>
+          <thead>
+            <tr><th>參數</th><th>說明</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>{env}</code></td><td>環境代碼，如 <code>dev</code>、<code>stg</code>、<code>prd</code></td></tr>
+            <tr><td><code>{data_date}</code></td><td>發查日期，格式 <code>YYYYMMDD</code></td></tr>
+            <tr><td><code>{serial_number}</code></td><td><code>HES.application.SERIAL_NUMBER</code></td></tr>
+          </tbody>
+        </table>
+
+        <h4>3.4 儲存下行 (BigQuery)</h4>
+        <p>目標資料表：<code>RAW_EDEP_DATASET.GEOCODING</code></p>
+        <table>
+          <thead>
+            <tr>
+              <th>欄位</th>
+              <th>資料來源</th>
+              <th>欄位說明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>PARTITION_DATE</td><td>來源 <code>partition_date + 1 day</code></td><td>寫入分區日期</td></tr>
+            <tr><td>CUID</td><td><code>HES.customer.CUID</code></td><td>客戶唯一識別碼</td></tr>
+            <tr><td>SERIAL_NUMBER</td><td><code>HES.application.SERIAL_NUMBER</code></td><td>申貸序號</td></tr>
+            <tr><td>CREATED_AT</td><td><code>HES.application.CREATED_AT</code></td><td>申貸建立時間</td></tr>
+            <tr><td>GEO_TYPE</td><td>—</td><td>發查類型：<code>RESIDENCE_ADDRESS</code> / <code>CONTACT_ADDRESS</code> / <code>CONTRACT_COORDINATES</code></td></tr>
+            <tr><td>REQUEST_LONGITUDE</td><td><code>VMB.apply_info.LONGITUDE</code></td><td>僅 CONTRACT_COORDINATES 有值，以字串寫入，其他為 NULL</td></tr>
+            <tr><td>REQUEST_LATITUDE</td><td><code>VMB.apply_info.LATITUDE</code></td><td>僅 CONTRACT_COORDINATES 有值，以字串寫入，其他為 NULL</td></tr>
+            <tr><td>REQUEST_ADDRESS</td><td>依 GEO_TYPE</td><td>RESIDENCE→<code>PERMANENT_DETAILED_ADDRESS</code>；CONTACT→<code>CURRENT_DETAILED_ADDRESS</code>；CONTRACT→NULL</td></tr>
+            <tr><td>RESPONSE_PLACE_ID</td><td>下行 <code>place_id</code></td><td>取不到為 NULL</td></tr>
+            <tr><td>RESPONSE_ADDRESS</td><td>下行 <code>formatted_address</code></td><td>取不到為 NULL</td></tr>
+            <tr><td>RESPONSE_GLOBAL_CODE</td><td>root-level <code>plus_code.global_code</code>，fallback <code>results[0].plus_code.global_code</code></td><td>取不到為 NULL</td></tr>
+            <tr><td>RESPONSE_PLACE_TYPES</td><td>下行 <code>types</code></td><td>LIST 以逗號合併為字串，取不到為 NULL</td></tr>
+            <tr><td>RESPONSE_LONGITUDE</td><td>下行 <code>geometry.location.lng</code></td><td>取不到為 NULL</td></tr>
+            <tr><td>RESPONSE_LATITUDE</td><td>下行 <code>geometry.location.lat</code></td><td>取不到為 NULL</td></tr>
+            <tr><td>RESPONSE_COUNTRY</td><td><code>address_components</code></td><td><code>types</code> 含 <code>country</code> 的 <code>long_name</code></td></tr>
+            <tr><td>RESPONSE_CITY</td><td><code>address_components</code></td><td><code>types</code> 含 <code>administrative_area_level_1</code> 的 <code>long_name</code></td></tr>
+            <tr><td>RESPONSE_DISTRICT</td><td><code>address_components</code></td><td><code>types</code> 含 <code>administrative_area_level_2</code> 的 <code>long_name</code></td></tr>
+            <tr><td>RESPONSE_WARD</td><td><code>address_components</code></td><td><code>types</code> 含 <code>sublocality_level_1</code> 的 <code>long_name</code></td></tr>
+            <tr><td>RESPONSE_STREET</td><td><code>address_components</code></td><td><code>types</code> 含 <code>route</code> 的 <code>long_name</code></td></tr>
+            <tr><td>BQ_CREATED_TIME</td><td>UTC timestamp 字串</td><td><code>%Y-%m-%dT%H:%M:%S.%f</code></td></tr>
+            <tr><td>BQ_UPDATED_TIME</td><td>UTC timestamp 字串</td><td><code>%Y-%m-%dT%H:%M:%S.%f</code></td></tr>
+          </tbody>
+        </table>
+        <blockquote><strong>補充：</strong><code>ZERO_RESULTS</code> 也會寫入一筆資料，僅保留 request 與 key 欄位，response 欄位多為 NULL。</blockquote>
+
+        <h4>3.5 處理結果代碼</h4>
+        <p>同第二章 2.6 處理結果代碼。</p>
+      </section>
+
+      <section class="section" id="chapter-4">
+        <span class="eyebrow">Chapter 4</span>
+        <h3>第四章、雲端資源配置與設計 (SD)</h3>
+
+        <h4>4.1 GCP 資源申請表</h4>
+        <blockquote>以下為本服務所需的 GCP 資源規格，需向 GCP 管理員申請並確認環境設定。</blockquote>
+
+        <h5>Cloud Run Job</h5>
+        <table>
+          <thead>
+            <tr><th>項目</th><th>規格</th><th>備註</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>服務名稱</td><td><code>geocoding-job</code></td><td>依環境加上 <code>-dev</code> / <code>-stg</code> / <code>-prd</code> 後綴</td></tr>
+            <tr><td>映像檔來源</td><td>GCR / Artifact Registry</td><td><code>{region}-docker.pkg.dev/{project}/geocoding/geocoding-job:{tag}</code></td></tr>
+            <tr><td>執行方式</td><td>Cloud Run Job（排程觸發）</td><td></td></tr>
+            <tr><td>排程</td><td>每日 01:00 VNT（UTC+7）</td><td>Cloud Scheduler 設定</td></tr>
+            <tr><td>記憶體</td><td>2 GiB</td><td>批次處理大量資料時的基本需求</td></tr>
+            <tr><td>CPU</td><td>2 vCPU</td><td></td></tr>
+            <tr><td>逾時時間</td><td>3600 秒（1 小時）</td><td>視資料量可調整至 7200 秒</td></tr>
+            <tr><td>最大重試次數</td><td>3</td><td>失敗後自動重試</td></tr>
+            <tr><td>執行環境</td><td>第二代執行環境</td><td></td></tr>
+            <tr><td>VPC 連接</td><td>需連接至 Private VPC</td><td>用於存取內部 BigQuery / GCS</td></tr>
+          </tbody>
+        </table>
+
+        <h5>Secret Manager</h5>
+        <table>
+          <thead>
+            <tr><th>金鑰名稱</th><th>說明</th><th>存取帳號</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>googlemaps-api-key</code></td><td>Google Maps Geocoding API 金鑰</td><td><code>geocoding-sa@{project}.iam.gserviceaccount.com</code></td></tr>
+          </tbody>
+        </table>
+
+        <h5>Service Account</h5>
+        <table>
+          <thead>
+            <tr><th>項目</th><th>規格</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>帳號名稱</td><td><code>geocoding-sa@{project}.iam.gserviceaccount.com</code></td></tr>
+            <tr><td>角色</td><td><code>roles/bigquery.dataEditor</code>（EDEP dataset）、<code>roles/bigquery.dataViewer</code>（HES、VMB dataset）、<code>roles/storage.objectCreator</code>（GCS bucket）、<code>roles/secretmanager.secretAccessor</code></td></tr>
+          </tbody>
+        </table>
+
+        <h5>BigQuery</h5>
+        <table>
+          <thead>
+            <tr><th>項目</th><th>規格</th><th>備註</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Dataset</td><td><code>RAW_EDEP_DATASET</code></td><td>已存在，需申請寫入權限</td></tr>
+            <tr><td>Table</td><td><code>GEOCODING</code></td><td>若不存在需依 3.4 欄位定義建立</td></tr>
+            <tr><td>資料分區</td><td>依 <code>PARTITION_DATE</code> 分區</td><td>建議使用 DATE 分區提升查詢效能</td></tr>
+            <tr><td>資料保留</td><td>依資料治理規範（建議 3 年）</td><td></td></tr>
+          </tbody>
+        </table>
+
+        <h5>GCS</h5>
+        <table>
+          <thead>
+            <tr><th>項目</th><th>規格</th><th>備註</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Bucket</td><td><code>ovslxvdo01-{env}-rawdata-api</code></td><td>已存在，需申請 objectCreator 權限</td></tr>
+            <tr><td>路徑</td><td><code>GOOGLEMAPS/GEOCODING/</code></td><td></td></tr>
+            <tr><td>物件命名格式</td><td><code>{data_date}_{serial_number}.json</code></td><td></td></tr>
+            <tr><td>存取控制</td><td>Uniform bucket-level access</td><td></td></tr>
+            <tr><td>資料保留</td><td>依資料治理規範（建議 90 天後轉 Nearline）</td><td></td></tr>
+          </tbody>
+        </table>
+
+        <h4>4.2 服務架構暨程式流程圖</h4>
+        <pre><code>Cloud Scheduler（每日 01:00）
+  ↓ 觸發
+Cloud Run Job: geocoding-job
+  ├─ Step 1: 取未發查客戶清單 (HES application/customer, VMB)
+  ├─ Step 2: 迴圈發查每筆資料 → 呼叫 Google Maps API
+  ├─ Step 3: 檢核下行
+  ├─ Step 4a: 儲存原始 JSON 至 GCS
+  └─ Step 4b: 寫入結構化欄位至 BigQuery (RAW_EDEP_DATASET.GEOCODING)
+
+Secret Manager → API Key 注入
+BigQuery HES / VMB ↔ 查詢來源資料
+GCS ← 原始下行
+BigQuery EDEP ← 結構化結果
+Google Maps Geocoding API ← 外部 API 呼叫</code></pre>
+      </section>
+
+      <section class="section" id="chapter-5">
+        <span class="eyebrow">Chapter 5</span>
+        <h3>第五章、非功能性需求設計 (SD)</h3>
+
+        <h4>5.1 效能需求</h4>
+        <table>
+          <thead>
+            <tr><th>項目</th><th>目標值</th><th>說明</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>每次作業處理筆數</td><td>無上限（依當日新增資料量）</td><td>批次全量處理</td></tr>
+            <tr><td>單筆 API 呼叫回應時間</td><td>≤ 500 ms（P95）</td><td>依 Google Maps SLA</td></tr>
+            <tr><td>每日作業完成時間</td><td>≤ 2 小時</td><td>需於 03:00 VNT 前完成，供早盤風控分析使用</td></tr>
+            <tr><td>API 呼叫速率</td><td>依 <code>qpm_limit</code> 控制（目前環境多為 1200 QPM）</td><td>程式以 QPM 節流（<code>min_interval = 60 / qpm_limit</code>）</td></tr>
+          </tbody>
+        </table>
+
+        <blockquote>
+          <p><strong>配額管理：</strong> 每日 Geocoding API 呼叫上限依 GCP 專案設定，預設免費額度為 40,000 次 / 月。若每日資料量超過 1,300 筆，需評估升級為付費方案或申請配額提升。</p>
+          <p><strong>效能可行性驗算（以 1200 QPM 為例）：</strong><br>作業時間限制：01:00 → 03:00 VNT = 2 小時 = 120 分鐘<br>QPM 上限：1,200 次 / 分鐘（約 20 QPS）<br>理論最大處理量：1,200 × 120 = 144,000 筆 / 日（未扣除重試與網路延遲）。</p>
+        </blockquote>
+
+        <h4>5.2 可用性與可靠性</h4>
+        <table>
+          <thead>
+            <tr><th>項目</th><th>目標值</th><th>說明</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>服務可用性</td><td>≥ 99.0%（月度計算）</td><td>以排程作業成功率衡量</td></tr>
+            <tr><td>作業成功率</td><td>≥ 99.5%（每日）</td><td>單日作業失敗率不超過 0.5%</td></tr>
+            <tr><td>失敗重試機制</td><td>Cloud Run Job 最多重試 3 次</td><td>適用於整個 Job 失敗的情況</td></tr>
+          </tbody>
+        </table>
+
+        <h4>5.3 錯誤處理策略</h4>
+        <table>
+          <thead>
+            <tr><th>錯誤類型</th><th>重試策略</th><th>告警</th><th>備註</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>HTTP <code>429/5xx</code></td><td>指數退避（約 1s → 2s → 4s，加上隨機小數），最多 3 次</td><td>重試後仍失敗記錄錯誤</td><td>Client 層重試邏輯</td></tr>
+            <tr><td><code>OVER_QUERY_LIMIT</code>（payload status）</td><td>不額外重試</td><td>記錄 log 並跳過</td><td>目前視為非 <code>OK</code> 回應</td></tr>
+            <tr><td><code>UNKNOWN_ERROR</code></td><td>固定間隔重試（30s），最多 3 次</td><td>連續失敗後中止批次</td><td><code>REQUEST_DENIED</code> 同為致命錯誤</td></tr>
+            <tr><td><code>REQUEST_DENIED</code></td><td>不重試</td><td>立即告警（高優先級），停止整批作業</td><td>API Key 失效或配額耗盡</td></tr>
+            <tr><td><code>INVALID_REQUEST</code></td><td>不重試</td><td>記錄 log，跳過該筆</td><td>上行資料問題，非 API 問題</td></tr>
+            <tr><td><code>ZERO_RESULTS</code></td><td>不重試</td><td>寫入 BigQuery 與 GCS（回應欄位多為 NULL）</td><td>地址無法解析但保留稽核軌跡</td></tr>
+            <tr><td>網路逾時</td><td>立即重試（最多 3 次）</td><td>若連續失敗，記錄錯誤</td><td>timeout 由設定檔控制（預設 30 秒）</td></tr>
+          </tbody>
+        </table>
+
+        <h4>5.4 快取與去重策略</h4>
+        <ul>
+          <li><strong>通訊地址 / 戶籍地址：</strong> 以兩層 <code>NOT EXISTS</code> 去重（<code>SERIAL_NUMBER</code>、<code>REQUEST_ADDRESS</code>）。</li>
+          <li><strong>簽約經緯度：</strong> 以兩層 <code>NOT EXISTS</code> 去重（<code>SERIAL_NUMBER</code>、<code>REQUEST_LONGITUDE</code> + <code>REQUEST_LATITUDE</code>）。</li>
+          <li><strong>SERIAL_NUMBER 去重：</strong> 同一申貸序號若已有任一類型發查紀錄，亦不重複發查。</li>
+        </ul>
+
+        <h4>5.5 安全性</h4>
+        <table>
+          <thead>
+            <tr><th>項目</th><th>措施</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>API Key 管理</td><td>儲存於 GCP Secret Manager，不硬編碼於程式碼或環境變數</td></tr>
+            <tr><td>最小權限原則</td><td>Service Account 僅授予必要的 BigQuery / GCS / Secret Manager 角色</td></tr>
+            <tr><td>資料傳輸加密</td><td>所有 Google Maps API 呼叫強制使用 HTTPS</td></tr>
+            <tr><td>內網存取</td><td>Cloud Run Job 透過 VPC Connector 存取 BigQuery / GCS，不開放公網</td></tr>
+            <tr><td>API Key 輪換</td><td>建議每 90 天輪換一次，輪換期間使用雙金鑰策略避免服務中斷</td></tr>
+          </tbody>
+        </table>
+
+        <h4>5.6 監控與日誌</h4>
+        <table>
+          <thead>
+            <tr><th>項目</th><th>工具</th><th>監控指標</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>作業成功 / 失敗</td><td>Cloud Monitoring + Cloud Run Job 狀態</td><td>Job 執行狀態、失敗次數</td></tr>
+            <tr><td>API 呼叫量</td><td>Cloud Monitoring</td><td>每日 Geocoding API 呼叫次數、配額使用率</td></tr>
+            <tr><td>錯誤率</td><td>Cloud Logging</td><td><code>REQUEST_DENIED</code>、<code>OVER_QUERY_LIMIT</code> 錯誤頻率</td></tr>
+            <tr><td>資料寫入量</td><td>BigQuery 查詢</td><td>每日新增至 <code>GEOCODING</code> 的資料筆數</td></tr>
+            <tr><td>告警通知</td><td>Cloud Monitoring Alerts → Slack / Email</td><td><code>REQUEST_DENIED</code> 立即告警；連續失敗超過閾值時告警</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="glossary">
+        <span class="eyebrow">Glossary</span>
+        <h3>附錄零 — 術語表</h3>
+        <div class="glossary-grid">
+          <article class="glossary-card"><strong>SASD</strong><p>System Analysis &amp; System Design，系統分析與設計文件。</p></article>
+          <article class="glossary-card"><strong>HES</strong><p>Hire Enterprise System，越南消金核心貸款系統。</p></article>
+          <article class="glossary-card"><strong>VMB</strong><p>Vietnam Mobile Banking，越南行動銀行申貸系統。</p></article>
+          <article class="glossary-card"><strong>EDEP</strong><p>External Data Exchange Platform，本服務結果儲存位置。</p></article>
+          <article class="glossary-card"><strong>CUID</strong><p>Customer Unique ID，客戶唯一識別碼。</p></article>
+          <article class="glossary-card"><strong>SERIAL_NUMBER</strong><p>申貸序號，唯一識別每一筆申貸案件。</p></article>
+          <article class="glossary-card"><strong>GEO_TYPE</strong><p><code>CONTACT_ADDRESS</code> / <code>RESIDENCE_ADDRESS</code> / <code>CONTRACT_COORDINATES</code>。</p></article>
+          <article class="glossary-card"><strong>Geocoding</strong><p>將地址字串轉換為經緯度座標。</p></article>
+          <article class="glossary-card"><strong>Reverse Geocoding</strong><p>將經緯度座標轉換為地址字串。</p></article>
+          <article class="glossary-card"><strong>QPM</strong><p>Queries Per Minute，每分鐘查詢次數（程式節流使用的速率單位）。</p></article>
+          <article class="glossary-card"><strong>VNT</strong><p>Vietnam Time，越南標準時間（UTC+7）。</p></article>
+          <article class="glossary-card"><strong>RESPONSE_ADDRESS</strong><p>Geocoding 下行 formatted_address 對應欄位（現行程式與 SQL 皆使用此拼字）。</p></article>
+        </div>
+      </section>
+
+      <section class="section" id="ddl">
+        <span class="eyebrow">Schema</span>
+        <h3>附錄零 b — BigQuery Schema DDL</h3>
+        <pre><code class="language-sql">CREATE TABLE IF NOT EXISTS `RAW_EDEP_DATASET.GEOCODING` (
+    PARTITION_DATE      DATE          NOT NULL OPTIONS(description="發查日期，BQ 預設 CURRENT_DATE()"),
+    CUID                STRING        NOT NULL OPTIONS(description="客戶唯一識別碼"),
+    SERIAL_NUMBER       STRING        NOT NULL OPTIONS(description="申貸序號"),
+    CREATED_AT          TIMESTAMP              OPTIONS(description="申貸建立時間，來自 HES.APPLICATION.CREATED_AT"),
+    GEO_TYPE            STRING        NOT NULL OPTIONS(description="發查類型: CONTACT_ADDRESS / RESIDENCE_ADDRESS / CONTRACT_COORDINATES"),
+    REQUEST_LONGITUDE   STRING                 OPTIONS(description="請求經度，僅 CONTRACT_COORDINATES 有值"),
+    REQUEST_LATITUDE    STRING                 OPTIONS(description="請求緯度，僅 CONTRACT_COORDINATES 有值"),
+    REQUEST_ADDRESS     STRING                 OPTIONS(description="請求地址，地址類型發查時有值"),
+    RESPONSE_PLACE_ID   STRING                 OPTIONS(description="Google Maps place_id"),
+    RESPONSE_ADDRESS    STRING                 OPTIONS(description="完整格式化地址（formatted_address）"),
+    RESPONSE_GLOBAL_CODE STRING                OPTIONS(description="Plus Code global_code"),
+    RESPONSE_PLACE_TYPES STRING                OPTIONS(description="types LIST，以逗號合併為字串"),
+    RESPONSE_LONGITUDE  STRING                 OPTIONS(description="回應經度 geometry.location.lng"),
+    RESPONSE_LATITUDE   STRING                 OPTIONS(description="回應緯度 geometry.location.lat"),
+    RESPONSE_COUNTRY    STRING                 OPTIONS(description="國家名稱（address_components type=country）"),
+    RESPONSE_CITY       STRING                 OPTIONS(description="城市/省份（administrative_area_level_1）"),
+    RESPONSE_DISTRICT   STRING                 OPTIONS(description="縣市/區（administrative_area_level_2）"),
+    RESPONSE_WARD       STRING                 OPTIONS(description="鄉鎮/街道（sublocality_level_1）"),
+    RESPONSE_STREET     STRING                 OPTIONS(description="路名（route）"),
+    BQ_CREATED_TIME     DATETIME               OPTIONS(description="BQ 建立時間"),
+    BQ_UPDATED_TIME     DATETIME               OPTIONS(description="BQ 更新時間")
+)
+PARTITION BY PARTITION_DATE
+OPTIONS(
+    description="Google Maps Geocoding 發查結果資料表",
+    partition_expiration_days=1095
+);</code></pre>
+      </section>
+
+      <section class="section appendix" id="appendix">
+        <span class="eyebrow">Appendix</span>
+        <h3>第六章、附錄</h3>
+        <p>附錄保留目前文件版本的完整 SQL 與 Python 驗證邏輯，與 Markdown 內容同步。</p>
+
+        <details>
+          <summary>附錄一 — 通訊地址發查 SQL</summary>
+          <div class="appendix-body">
+            <pre><code class="language-sql">WITH latest_hes_application AS (
+  SELECT
+    id,
+    serial_number,
+    created_at,
+    PARTITION_DATE AS partition_date,
+    customer_id,
+    BQ_UPDATED_TIME
+  FROM `RAW_HES_DATASET.APPLICATION`
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY id
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
+),
+latest_hes_customer AS (
+  SELECT
+    id,
+    cuid,
+    current_application_id,
+    current_detailed_address
+  FROM `RAW_HES_DATASET.CUSTOMER`
+  WHERE UPPER(COALESCE(current_detailed_address, 'NULL')) != 'NULL'
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY cuid
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
+)
+SELECT
+  appl.serial_number,
+  appl.created_at,
+  appl.partition_date,
+  cust.cuid,
+  cust.current_detailed_address AS request_address,
+  CAST(NULL AS FLOAT64) AS request_longitude,
+  CAST(NULL AS FLOAT64) AS request_latitude
+FROM latest_hes_application AS appl
+JOIN latest_hes_customer AS cust
+  ON appl.customer_id = cust.id
+  AND appl.id = cust.current_application_id
+WHERE NOT EXISTS (
+  SELECT 1
+  FROM `RAW_EDEP_DATASET.GEOCODING` AS geo_coding
+  WHERE geo_coding.GEO_TYPE = 'CONTACT_ADDRESS'
+    AND geo_coding.SERIAL_NUMBER = appl.serial_number
+)
+  AND NOT EXISTS (
+    SELECT 1
+    FROM `RAW_EDEP_DATASET.GEOCODING` AS geo_coding
+    WHERE geo_coding.GEO_TYPE = 'CONTACT_ADDRESS'
+      AND UPPER(COALESCE(geo_coding.REQUEST_ADDRESS, 'NULL')) != 'NULL'
+      AND geo_coding.REQUEST_ADDRESS = cust.current_detailed_address
+  )
+ORDER BY serial_number DESC
+LIMIT 500</code></pre>
+          </div>
+        </details>
+
+        <details>
+          <summary>附錄二 — 戶籍地址發查 SQL</summary>
+          <div class="appendix-body">
+            <pre><code class="language-sql">WITH latest_hes_application AS (
+  SELECT
+    id,
+    serial_number,
+    created_at,
+    PARTITION_DATE AS partition_date,
+    customer_id,
+    BQ_UPDATED_TIME
+  FROM `RAW_HES_DATASET.APPLICATION`
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY id
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
+),
+latest_hes_customer AS (
+  SELECT
+    id,
+    cuid,
+    current_application_id,
+    permanent_detailed_address
+  FROM `RAW_HES_DATASET.CUSTOMER`
+  WHERE UPPER(COALESCE(permanent_detailed_address, 'NULL')) != 'NULL'
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY cuid
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
+)
+SELECT
+  appl.serial_number,
+  appl.created_at,
+  appl.partition_date,
+  cust.cuid,
+  cust.permanent_detailed_address AS request_address,
+  CAST(NULL AS FLOAT64) AS request_longitude,
+  CAST(NULL AS FLOAT64) AS request_latitude
+FROM latest_hes_application AS appl
+JOIN latest_hes_customer AS cust
+  ON appl.customer_id = cust.id
+  AND appl.id = cust.current_application_id
+WHERE NOT EXISTS (
+  SELECT 1
+  FROM `RAW_EDEP_DATASET.GEOCODING` AS geo_coding
+  WHERE geo_coding.GEO_TYPE = 'RESIDENCE_ADDRESS'
+    AND geo_coding.SERIAL_NUMBER = appl.serial_number
+)
+  AND NOT EXISTS (
+    SELECT 1
+    FROM `RAW_EDEP_DATASET.GEOCODING` AS geo_coding
+    WHERE geo_coding.GEO_TYPE = 'RESIDENCE_ADDRESS'
+      AND UPPER(COALESCE(geo_coding.REQUEST_ADDRESS, 'NULL')) != 'NULL'
+      AND geo_coding.REQUEST_ADDRESS = cust.permanent_detailed_address
+  )
+ORDER BY serial_number DESC
+LIMIT 500</code></pre>
+          </div>
+        </details>
+
+        <details>
+          <summary>附錄三 — 簽約經緯度發查 SQL</summary>
+          <div class="appendix-body">
+            <pre><code class="language-sql">WITH latest_hes_application AS (
+  SELECT
+    id,
+    serial_number,
+    created_at,
+    PARTITION_DATE AS partition_date,
+    customer_id,
+    BQ_UPDATED_TIME
+  FROM `RAW_HES_DATASET.APPLICATION`
+  WHERE status = 'ACTIVE'
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY id
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
+),
+latest_hes_customer AS (
+  SELECT
+    id,
+    cuid,
+    current_application_id
+  FROM `RAW_HES_DATASET.CUSTOMER`
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY cuid
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
+),
+latest_vmb_apply_info AS (
+  SELECT
+    cuid,
+    SAFE_CAST(longitude AS FLOAT64) AS longitude,
+    SAFE_CAST(latitude AS FLOAT64) AS latitude
+  FROM `RAW_VMB_DATASET.APPLY_INFO`
+  WHERE UPPER(COALESCE(longitude, 'NULL')) != 'NULL'
+    AND UPPER(COALESCE(latitude, 'NULL')) != 'NULL'
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY cuid
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
+)
+SELECT
+  appl.serial_number,
+  appl.created_at,
+  appl.partition_date,
+  cust.cuid,
+  CAST(NULL AS STRING) AS request_address,
+  CAST(apply_info.longitude AS STRING) AS request_longitude,
+  CAST(apply_info.latitude AS STRING) AS request_latitude
+FROM latest_hes_application AS appl
+JOIN latest_hes_customer AS cust
+  ON appl.customer_id = cust.id
+  AND appl.id = cust.current_application_id
+JOIN latest_vmb_apply_info AS apply_info
+  ON cust.cuid = apply_info.cuid
+WHERE NOT EXISTS (
+  SELECT 1
+  FROM `RAW_EDEP_DATASET.GEOCODING` AS geo_coding
+  WHERE geo_coding.GEO_TYPE = 'CONTRACT_COORDINATES'
+    AND geo_coding.SERIAL_NUMBER = appl.serial_number
+)
+  AND NOT EXISTS (
+    SELECT 1
+    FROM `RAW_EDEP_DATASET.GEOCODING` AS geo_coding
+    WHERE geo_coding.GEO_TYPE = 'CONTRACT_COORDINATES'
+      AND SAFE_CAST(geo_coding.REQUEST_LONGITUDE AS FLOAT64) IS NOT NULL
+      AND SAFE_CAST(geo_coding.REQUEST_LATITUDE AS FLOAT64) IS NOT NULL
+      AND SAFE_CAST(geo_coding.REQUEST_LONGITUDE AS FLOAT64) = apply_info.longitude
+      AND SAFE_CAST(geo_coding.REQUEST_LATITUDE AS FLOAT64) = apply_info.latitude
+  )
+ORDER BY serial_number DESC
+LIMIT 500</code></pre>
+          </div>
+        </details>
+
+        <details>
+          <summary>附錄四 — 更新已發查通訊地址 SQL</summary>
+          <div class="appendix-body">
+            <pre><code class="language-sql">-- 參照 SASD 附錄四：更新已發查通訊地址
+INSERT INTO `RAW_EDEP_DATASET.GEOCODING` (
+  PARTITION_DATE,
+  CUID,
+  SERIAL_NUMBER,
+  CREATED_AT,
+  GEO_TYPE,
+  REQUEST_ADDRESS,
+  RESPONSE_PLACE_ID,
+  RESPONSE_ADDRESS,
+  RESPONSE_GLOBAL_CODE,
+  RESPONSE_PLACE_TYPES,
+  RESPONSE_LONGITUDE,
+  RESPONSE_LATITUDE,
+  RESPONSE_COUNTRY,
+  RESPONSE_CITY,
+  RESPONSE_DISTRICT,
+  RESPONSE_WARD,
+  RESPONSE_STREET,
+  BQ_CREATED_TIME,
+  BQ_UPDATED_TIME
+)
+WITH latest_hes_application AS (
+  SELECT
+    id,
+    serial_number,
+    created_at,
+    PARTITION_DATE AS partition_date,
+    customer_id,
+    BQ_UPDATED_TIME
+  FROM `RAW_HES_DATASET.APPLICATION`
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY id
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
+),
+latest_hes_customer AS (
+  SELECT
+    id,
+    cuid,
+    current_application_id,
+    current_detailed_address
+  FROM `RAW_HES_DATASET.CUSTOMER`
+  WHERE UPPER(COALESCE(current_detailed_address, 'NULL')) != 'NULL'
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY cuid
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
+),
+geocoding_serial_number_list AS (
+  SELECT DISTINCT serial_number
+  FROM `RAW_EDEP_DATASET.GEOCODING`
+  WHERE GEO_TYPE = 'CONTACT_ADDRESS'
+),
+distinct_address AS (
+  SELECT DISTINCT
+    REQUEST_ADDRESS,
+    RESPONSE_PLACE_ID,
+    RESPONSE_ADDRESS,
+    RESPONSE_GLOBAL_CODE,
+    RESPONSE_PLACE_TYPES,
+    RESPONSE_LONGITUDE,
+    RESPONSE_LATITUDE,
+    RESPONSE_COUNTRY,
+    RESPONSE_CITY,
+    RESPONSE_DISTRICT,
+    RESPONSE_WARD,
+    RESPONSE_STREET
+  FROM `RAW_EDEP_DATASET.GEOCODING`
+  WHERE GEO_TYPE = 'CONTACT_ADDRESS'
+    AND UPPER(COALESCE(RESPONSE_ADDRESS, 'NULL')) != 'NULL'
+)
+SELECT
+  CURRENT_DATE(),
+  cust.cuid,
+  appl.serial_number,
+  appl.created_at,
+  'CONTACT_ADDRESS',
+  cust.current_detailed_address,
+  geo_coding.RESPONSE_PLACE_ID,
+  geo_coding.RESPONSE_ADDRESS,
+  geo_coding.RESPONSE_GLOBAL_CODE,
+  geo_coding.RESPONSE_PLACE_TYPES,
+  geo_coding.RESPONSE_LONGITUDE,
+  geo_coding.RESPONSE_LATITUDE,
+  geo_coding.RESPONSE_COUNTRY,
+  geo_coding.RESPONSE_CITY,
+  geo_coding.RESPONSE_DISTRICT,
+  geo_coding.RESPONSE_WARD,
+  geo_coding.RESPONSE_STREET,
+  DATETIME(SAFE_CAST(appl.created_at AS TIMESTAMP), 'UTC'),
+  CURRENT_DATETIME('UTC')
+FROM latest_hes_application AS appl
+JOIN latest_hes_customer AS cust
+  ON appl.customer_id = cust.id
+  AND appl.id = cust.current_application_id
+LEFT JOIN geocoding_serial_number_list AS ser_list
+  ON appl.serial_number = ser_list.serial_number
+LEFT JOIN distinct_address AS geo_coding
+  ON cust.current_detailed_address = geo_coding.REQUEST_ADDRESS
+WHERE ser_list.serial_number IS NULL
+  AND geo_coding.REQUEST_ADDRESS IS NOT NULL</code></pre>
+          </div>
+        </details>
+
+        <details>
+          <summary>附錄五 — 更新已發查戶籍地址 SQL</summary>
+          <div class="appendix-body">
+            <pre><code class="language-sql">-- 參照 SASD 附錄五：更新已發查戶籍地址
+INSERT INTO `RAW_EDEP_DATASET.GEOCODING` (
+  PARTITION_DATE,
+  CUID,
+  SERIAL_NUMBER,
+  CREATED_AT,
+  GEO_TYPE,
+  REQUEST_ADDRESS,
+  RESPONSE_PLACE_ID,
+  RESPONSE_ADDRESS,
+  RESPONSE_GLOBAL_CODE,
+  RESPONSE_PLACE_TYPES,
+  RESPONSE_LONGITUDE,
+  RESPONSE_LATITUDE,
+  RESPONSE_COUNTRY,
+  RESPONSE_CITY,
+  RESPONSE_DISTRICT,
+  RESPONSE_WARD,
+  RESPONSE_STREET,
+  BQ_CREATED_TIME,
+  BQ_UPDATED_TIME
+)
+WITH latest_hes_application AS (
+  SELECT
+    id,
+    serial_number,
+    created_at,
+    PARTITION_DATE AS partition_date,
+    customer_id,
+    BQ_UPDATED_TIME
+  FROM `RAW_HES_DATASET.APPLICATION`
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY id
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
+),
+latest_hes_customer AS (
+  SELECT
+    id,
+    cuid,
+    current_application_id,
+    permanent_detailed_address
+  FROM `RAW_HES_DATASET.CUSTOMER`
+  WHERE UPPER(COALESCE(permanent_detailed_address, 'NULL')) != 'NULL'
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY cuid
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
+),
+geocoding_serial_number_list AS (
+  SELECT DISTINCT serial_number
+  FROM `RAW_EDEP_DATASET.GEOCODING`
+  WHERE GEO_TYPE = 'RESIDENCE_ADDRESS'
+),
+distinct_address AS (
+  SELECT DISTINCT
+    REQUEST_ADDRESS,
+    RESPONSE_PLACE_ID,
+    RESPONSE_ADDRESS,
+    RESPONSE_GLOBAL_CODE,
+    RESPONSE_PLACE_TYPES,
+    RESPONSE_LONGITUDE,
+    RESPONSE_LATITUDE,
+    RESPONSE_COUNTRY,
+    RESPONSE_CITY,
+    RESPONSE_DISTRICT,
+    RESPONSE_WARD,
+    RESPONSE_STREET
+  FROM `RAW_EDEP_DATASET.GEOCODING`
+  WHERE GEO_TYPE = 'RESIDENCE_ADDRESS'
+    AND UPPER(COALESCE(RESPONSE_ADDRESS, 'NULL')) != 'NULL'
+)
+SELECT
+  CURRENT_DATE(),
+  cust.cuid,
+  appl.serial_number,
+  appl.created_at,
+  'RESIDENCE_ADDRESS',
+  cust.permanent_detailed_address,
+  geo_coding.RESPONSE_PLACE_ID,
+  geo_coding.RESPONSE_ADDRESS,
+  geo_coding.RESPONSE_GLOBAL_CODE,
+  geo_coding.RESPONSE_PLACE_TYPES,
+  geo_coding.RESPONSE_LONGITUDE,
+  geo_coding.RESPONSE_LATITUDE,
+  geo_coding.RESPONSE_COUNTRY,
+  geo_coding.RESPONSE_CITY,
+  geo_coding.RESPONSE_DISTRICT,
+  geo_coding.RESPONSE_WARD,
+  geo_coding.RESPONSE_STREET,
+  DATETIME(SAFE_CAST(appl.created_at AS TIMESTAMP), 'UTC'),
+  CURRENT_DATETIME('UTC')
+FROM latest_hes_application AS appl
+JOIN latest_hes_customer AS cust
+  ON appl.customer_id = cust.id
+  AND appl.id = cust.current_application_id
+LEFT JOIN geocoding_serial_number_list AS ser_list
+  ON appl.serial_number = ser_list.serial_number
+LEFT JOIN distinct_address AS geo_coding
+  ON cust.permanent_detailed_address = geo_coding.REQUEST_ADDRESS
+WHERE ser_list.serial_number IS NULL
+  AND geo_coding.REQUEST_ADDRESS IS NOT NULL</code></pre>
+          </div>
+        </details>
+
+        <details>
+          <summary>附錄六 — 更新已發查經緯度 SQL</summary>
+          <div class="appendix-body">
+            <pre><code class="language-sql">-- -- 參照 SASD 附錄六：更新已發查經緯度
+-- INSERT INTO `RAW_EDEP_DATASET.GEOCODING` (
+--   PARTITION_DATE,
+--   CUID,
+--   SERIAL_NUMBER,
+--   CREATED_AT,
+--   GEO_TYPE,
+--   REQUEST_LONGITUDE,
+--   REQUEST_LATITUDE,
+--   RESPONSE_PLACE_ID,
+--   RESPONSE_ADDRESS,
+--   RESPONSE_GLOBAL_CODE,
+--   RESPONSE_PLACE_TYPES,
+--   RESPONSE_LONGITUDE,
+--   RESPONSE_LATITUDE,
+--   RESPONSE_COUNTRY,
+--   RESPONSE_CITY,
+--   RESPONSE_DISTRICT,
+--   RESPONSE_WARD,
+--   RESPONSE_STREET,
+--   BQ_CREATED_TIME,
+--   BQ_UPDATED_TIME
+-- )
+-- WITH latest_hes_application AS (
+--   SELECT
+--     id,
+--     serial_number,
+--     created_at,
+--     PARTITION_DATE AS partition_date,
+--     customer_id,
+--     BQ_UPDATED_TIME
+--   FROM `RAW_HES_DATASET.APPLICATION`
+--   QUALIFY ROW_NUMBER() OVER (
+--     PARTITION BY id
+--     ORDER BY BQ_UPDATED_TIME DESC
+--   ) = 1
+-- ),
+-- latest_hes_customer AS (
+--   SELECT
+--     id,
+--     cuid
+--   FROM `RAW_HES_DATASET.CUSTOMER`
+--   QUALIFY ROW_NUMBER() OVER (
+--     PARTITION BY cuid
+--     ORDER BY BQ_UPDATED_TIME DESC
+--   ) = 1
+-- ),
+-- latest_vmb_apply_info AS (
+--   SELECT
+--     cuid,
+--     ROUND(SAFE_CAST(longitude AS FLOAT64), 4) AS longitude,
+--     ROUND(SAFE_CAST(latitude AS FLOAT64), 4) AS latitude
+--   FROM `RAW_VMB_DATASET.APPLY_INFO`
+--   WHERE SAFE_CAST(longitude AS FLOAT64) IS NOT NULL
+--     AND SAFE_CAST(latitude AS FLOAT64) IS NOT NULL
+--   QUALIFY ROW_NUMBER() OVER (
+--     PARTITION BY cuid
+--     ORDER BY BQ_UPDATED_TIME DESC
+--   ) = 1
+-- ),
+-- geocoding_serial_number_list AS (
+--   SELECT DISTINCT serial_number
+--   FROM `RAW_EDEP_DATASET.GEOCODING`
+--   WHERE GEO_TYPE = 'CONTRACT_COORDINATES'
+-- ),
+-- distinct_coordinates AS (
+--   SELECT DISTINCT
+--     REQUEST_LONGITUDE,
+--     REQUEST_LATITUDE,
+--     RESPONSE_PLACE_ID,
+--     RESPONSE_ADDRESS,
+--     RESPONSE_GLOBAL_CODE,
+--     RESPONSE_PLACE_TYPES,
+--     RESPONSE_LONGITUDE,
+--     RESPONSE_LATITUDE,
+--     RESPONSE_COUNTRY,
+--     RESPONSE_CITY,
+--     RESPONSE_DISTRICT,
+--     RESPONSE_WARD,
+--     RESPONSE_STREET
+--   FROM `RAW_EDEP_DATASET.GEOCODING`
+--   WHERE GEO_TYPE = 'CONTRACT_COORDINATES'
+--     AND UPPER(COALESCE(REQUEST_LONGITUDE, 'NULL')) != 'NULL'
+--     AND UPPER(COALESCE(REQUEST_LATITUDE, 'NULL')) != 'NULL'
+-- )
+-- SELECT
+--   DATE_ADD(appl.partition_date, INTERVAL 1 DAY),
+--   cust.cuid,
+--   appl.serial_number,
+--   appl.created_at,
+--   'CONTRACT_COORDINATES',
+--   CAST(apply_info.longitude AS STRING),
+--   CAST(apply_info.latitude AS STRING),
+--   geo_coding.RESPONSE_PLACE_ID,
+--   geo_coding.RESPONSE_ADDRESS,
+--   geo_coding.RESPONSE_GLOBAL_CODE,
+--   geo_coding.RESPONSE_PLACE_TYPES,
+--   geo_coding.RESPONSE_LONGITUDE,
+--   geo_coding.RESPONSE_LATITUDE,
+--   geo_coding.RESPONSE_COUNTRY,
+--   geo_coding.RESPONSE_CITY,
+--   geo_coding.RESPONSE_DISTRICT,
+--   geo_coding.RESPONSE_WARD,
+--   geo_coding.RESPONSE_STREET,
+--   DATETIME(SAFE_CAST(appl.created_at AS TIMESTAMP), 'UTC'),
+--   CURRENT_DATETIME('UTC')
+-- FROM latest_hes_application AS appl
+-- JOIN latest_hes_customer AS cust
+--   ON appl.customer_id = cust.id
+-- JOIN latest_vmb_apply_info AS apply_info
+--   ON cust.cuid = apply_info.cuid
+-- LEFT JOIN geocoding_serial_number_list AS ser_list
+--   ON appl.serial_number = ser_list.serial_number
+-- LEFT JOIN distinct_coordinates AS geo_coding
+--   ON apply_info.longitude = SAFE_CAST(geo_coding.REQUEST_LONGITUDE AS FLOAT64)
+--  AND apply_info.latitude = SAFE_CAST(geo_coding.REQUEST_LATITUDE AS FLOAT64)
+-- WHERE ser_list.serial_number IS NULL
+--   AND geo_coding.REQUEST_LONGITUDE IS NOT NULL
+--   AND geo_coding.REQUEST_LATITUDE IS NOT NULL</code></pre>
+          </div>
+        </details>
+
+        <details>
+          <summary>附錄七 — 下行檢核 Python 程式碼</summary>
+          <div class="appendix-body">
+            <pre><code class="language-python">def validate_geocoding_response(response: dict) -> bool:
+    """
+    驗證 Google Maps Geocoding API 下行回應是否有效。
+    回傳 True 表示資料有效，可儲存；False 表示跳過。
+    """
+    status = response.get("status")
+
+    if status != "OK":
+        return False
+
+    results = response.get("results", [])
+    if not results:
+        return False
+
+    result = results[0]
+
+    if not result.get("formatted_address"):
+        return False
+
+    geometry = result.get("geometry", {})
+    location = geometry.get("location", {})
+    lat = location.get("lat")
+    lng = location.get("lng")
+
+    if lat is None or lng is None:
+        return False
+
+    try:
+        float(lat)
+        float(lng)
+    except (ValueError, TypeError):
+        return False
+
+    address_components = result.get("address_components", [])
+    if not address_components:
+        return False
+
+    return True
+
+
+def extract_address_component(address_components: list, target_type: str) -> str | None:
+    """
+    從 address_components 中取出指定類型的 long_name。
+    """
+    for component in address_components:
+        if target_type in component.get("types", []):
+            return component.get("long_name")
+    return None</code></pre>
+          </div>
+        </details>
+
+        <div class="footer-note">
+          HTML 版本忠實保留原始設計文件的核心資訊，同時將長附錄改為摺疊呈現，讓閱讀者能先抓到架構與重點，再往下鑽研細節。
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

@@ -38,6 +38,7 @@ latest_hes_customer AS (
   SELECT
     id,
     cuid,
+    current_application_id,
     current_detailed_address
   FROM `RAW_HES_DATASET.CUSTOMER`
   WHERE UPPER(COALESCE(current_detailed_address, 'NULL')) != 'NULL'
@@ -70,7 +71,7 @@ distinct_address AS (
     AND UPPER(COALESCE(RESPONSE_ADDRESS, 'NULL')) != 'NULL'
 )
 SELECT
-  DATE_ADD(appl.partition_date, INTERVAL 1 DAY),
+  CURRENT_DATE(),
   cust.cuid,
   appl.serial_number,
   appl.created_at,
@@ -92,6 +93,7 @@ SELECT
 FROM latest_hes_application AS appl
 JOIN latest_hes_customer AS cust
   ON appl.customer_id = cust.id
+  AND appl.id = cust.current_application_id
 LEFT JOIN geocoding_serial_number_list AS ser_list
   ON appl.serial_number = ser_list.serial_number
 LEFT JOIN distinct_address AS geo_coding

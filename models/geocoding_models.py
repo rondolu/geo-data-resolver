@@ -38,6 +38,7 @@ class GeocodingResult(BaseModel):
 
 class GeocodingApiResponse(BaseModel):
     status: str
+    plus_code: Optional[PlusCode] = None
     results: List[GeocodingResult] = Field(default_factory=list)
 
 
@@ -76,4 +77,30 @@ def extract_address_component(address_components: List[Dict[str, Any]], target_t
         types = component.get("types", []) if isinstance(component, dict) else []
         if target_type in types:
             return component.get("long_name")
+    return None
+
+
+def extract_global_code(response: Dict[str, Any]) -> Optional[str]:
+    """取得 global_code，優先 root-level，再 fallback 到 results[0].plus_code。"""
+    if not isinstance(response, dict):
+        return None
+
+    root_plus_code = response.get("plus_code", {})
+    if isinstance(root_plus_code, dict):
+        root_global_code = root_plus_code.get("global_code")
+        if root_global_code:
+            return root_global_code
+
+    results = response.get("results", [])
+    if not isinstance(results, list) or not results:
+        return None
+
+    first = results[0]
+    if not isinstance(first, dict):
+        return None
+
+    result_plus_code = first.get("plus_code", {})
+    if isinstance(result_plus_code, dict):
+        return result_plus_code.get("global_code")
+
     return None

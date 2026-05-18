@@ -5,6 +5,7 @@
 
 import sys
 import types
+from datetime import date
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -62,6 +63,7 @@ def _valid_geocoding_response():
     """
     return {
         "status": "OK",
+        "plus_code": {"global_code": "ROOT-7P273PR4+2QX"},
         "results": [
             {
                 "place_id": "pid-1",
@@ -203,8 +205,20 @@ def test_non_fatal_error_continues_to_next_record(_mock_gcs, _mock_api, _mock_bq
         result, _ = service._process_batch_records(
             "contact_address",
             [
-                {"cuid": "c1", "serial_number": "s1", "created_at": "2026-01-01", "request_address": "bad"},
-                {"cuid": "c2", "serial_number": "s2", "created_at": "2026-01-01", "request_address": "ok"},
+                    {
+                        "cuid": "c1",
+                        "serial_number": "s1",
+                        "created_at": "2026-01-01",
+                        "partition_date": date(2026, 1, 1),
+                        "request_address": "bad",
+                    },
+                    {
+                        "cuid": "c2",
+                        "serial_number": "s2",
+                        "created_at": "2026-01-01",
+                        "partition_date": date(2026, 1, 1),
+                        "request_address": "ok",
+                    },
             ],
             context,
         )
@@ -239,7 +253,7 @@ def test_zero_results_skips_without_raising(_mock_gcs, _mock_api, _mock_bq):
                 "cuid": "c1",
                 "serial_number": "s1",
                 "created_at": "2026-01-01",
-                "partition_date": "2026-01-01",
+                "partition_date": date(2026, 1, 1),
                 "request_address": "none",
             }],
             context,
@@ -355,4 +369,75 @@ def test_call_geocoding_api_very_long_address_bubble_up_api_error(_mock_gcs, _mo
         )
 
     service.api_service.get_geocoding_result.assert_called_once_with(address=long_address)
+
+
+@patch("application.geocoding_batch_process_service.BigQueryService")
+@patch("application.geocoding_batch_process_service.GoogleMapsAPIService")
+@patch("application.geocoding_batch_process_service.GCSService")
+def test_build_bq_row_uses_root_level_global_code(_mock_gcs, _mock_api, _mock_bq):
+    """驗證 BQ row 的 RESPONSE_GLOBAL_CODE 優先取 root-level plus_code.global_code。"""
+    service = GeocodingBatchProcessService()
+
+    source_record = {
+        "partition_date": date(2026, 1, 1),
+        "cuid": "cuid-1",
+        "serial_number": "sn-1",
+        "created_at": "2026-01-01T00:00:00",
+        "request_address": "A",
+    }
+    geocoding_first_result = _valid_geocoding_response()["results"][0]
+    api_full_response = _valid_geocoding_response()
+
+    row = service._build_bq_row("contact_address", source_record, geocoding_first_result, api_full_response)
+    assert row["RESPONSE_GLOBAL_CODE"] == "ROOT-7P273PR4+2QX"
+
+
+@patch("application.geocoding_batch_process_service.BigQueryService")
+@patch("application.geocoding_batch_process_service.GoogleMapsAPIService")
+@patch("application.geocoding_batch_process_service.GCSService")
+def test_build_bq_row_fallback_to_result_plus_code(_mock_gcs, _mock_api, _mock_bq):
+    """驗證 root-level 無值時會 fallback 到 results[0].plus_code.global_code。"""
+    service = GeocodingBatchProcessService()
+
+    source_record = {
+        "partition_date": date(2026, 1, 1),
+        "cuid": "cuid-1",
+        "serial_number": "sn-1",
+        "created_at": "2026-01-01T00:00:00",
+        "request_address": "A",
+    }
+    api_full_response = _valid_geocoding_response()
+    api_full_response["plus_code"] = {}
+    geocoding_first_result = api_full_response["results"][0]
+
+    row = service._build_bq_row("contact_address", source_record, geocoding_first_result, api_full_response)
+    assert row["RESPONSE_GLOBAL_CODE"] == "7P28QPX7+QX"
+
+
+@patch("application.geocoding_batch_process_service.BigQueryService")
+@patch("application.geocoding_batch_process_service.GoogleMapsAPIService")
+@patch("application.geocoding_batch_process_service.GCSService")
+def test_gcs_payload_keeps_root_level_fields(_mock_gcs, _mock_api, _mock_bq):
+    """驗證寫入 GCS 的 payload 保留 root-level 欄位。"""
+    service = GeocodingBatchProcessService()
+    context = BatchContext(batch_number=1, is_last_batch=True)
+
+    with patch.object(service, "_call_geocoding_api", return_value=_valid_geocoding_response()), \
+         patch.object(service, "_upload_success_rows_to_gcs") as mock_upload, \
+         patch.object(service, "_insert_rows_to_bq"):
+        service._process_batch_records(
+            "contact_address",
+            [{
+                "partition_date": date(2026, 1, 1),
+                "cuid": "c1",
+                "serial_number": "s1",
+                "created_at": "2026-01-01",
+                "request_address": "ok",
+            }],
+            context,
+        )
+
+    uploaded_rows = mock_upload.call_args.args[0]
+    assert uploaded_rows[0]["payload"]["status"] == "OK"
+    assert uploaded_rows[0]["payload"]["plus_code"]["global_code"] == "ROOT-7P273PR4+2QX"
 

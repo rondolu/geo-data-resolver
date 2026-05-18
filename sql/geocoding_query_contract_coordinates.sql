@@ -7,6 +7,7 @@ WITH latest_hes_application AS (
     customer_id,
     BQ_UPDATED_TIME
   FROM `RAW_HES_DATASET.APPLICATION`
+  WHERE status = 'ACTIVE'
   QUALIFY ROW_NUMBER() OVER (
     PARTITION BY id
     ORDER BY BQ_UPDATED_TIME DESC
@@ -15,7 +16,8 @@ WITH latest_hes_application AS (
 latest_hes_customer AS (
   SELECT
     id,
-    cuid
+    cuid,
+    current_application_id
   FROM `RAW_HES_DATASET.CUSTOMER`
   QUALIFY ROW_NUMBER() OVER (
     PARTITION BY cuid
@@ -25,8 +27,8 @@ latest_hes_customer AS (
 latest_vmb_apply_info AS (
   SELECT
     cuid,
-    ROUND(SAFE_CAST(longitude AS FLOAT64), 4) AS longitude,
-    ROUND(SAFE_CAST(latitude AS FLOAT64), 4) AS latitude
+    SAFE_CAST(longitude AS FLOAT64) AS longitude,
+    SAFE_CAST(latitude AS FLOAT64) AS latitude
   FROM `RAW_VMB_DATASET.APPLY_INFO`
   WHERE UPPER(COALESCE(longitude, 'NULL')) != 'NULL'
     AND UPPER(COALESCE(latitude, 'NULL')) != 'NULL'
@@ -46,6 +48,7 @@ SELECT
 FROM latest_hes_application AS appl
 JOIN latest_hes_customer AS cust
   ON appl.customer_id = cust.id
+  AND appl.id = cust.current_application_id
 JOIN latest_vmb_apply_info AS apply_info
   ON cust.cuid = apply_info.cuid
 WHERE NOT EXISTS (

@@ -1,0 +1,183 @@
+-- 用途：找出並清除 RAW_EDEP_DATASET.GEOCODING 的重複資料。
+-- 規則：若資料內容完全相同，僅 BQ_CREATED_TIME / BQ_UPDATED_TIME 不同，則保留最新一筆，其餘刪除。
+-- 注意：若重複資料跨不同分區日期，這份腳本同樣會抓出，因為 PARTITION_DATE 不納入重複判斷鍵。
+
+-- 請先將 your-project-id 替換成實際 GCP project id。
+
+CREATE TEMP TABLE dup_rows AS
+WITH base AS (
+  SELECT
+    t.*,
+    TO_JSON_STRING(
+      STRUCT(
+        CUID,
+        SERIAL_NUMBER,
+        CREATED_AT,
+        GEO_TYPE,
+        REQUEST_ADDRESS,
+        REQUEST_LONGITUDE,
+        REQUEST_LATITUDE,
+        RESPONSE_PLACE_ID,
+        RESPONSE_ADDRESS,
+        RESPONSE_GLOBAL_CODE,
+        RESPONSE_PLACE_TYPES,
+        RESPONSE_LONGITUDE,
+        RESPONSE_LATITUDE,
+        RESPONSE_COUNTRY,
+        RESPONSE_CITY,
+        RESPONSE_DISTRICT,
+        RESPONSE_WARD,
+        RESPONSE_STREET
+      )
+    ) AS dedupe_key,
+    TO_JSON_STRING(
+      STRUCT(
+        PARTITION_DATE,
+        CUID,
+        SERIAL_NUMBER,
+        CREATED_AT,
+        GEO_TYPE,
+        REQUEST_ADDRESS,
+        REQUEST_LONGITUDE,
+        REQUEST_LATITUDE,
+        RESPONSE_PLACE_ID,
+        RESPONSE_ADDRESS,
+        RESPONSE_GLOBAL_CODE,
+        RESPONSE_PLACE_TYPES,
+        RESPONSE_LONGITUDE,
+        RESPONSE_LATITUDE,
+        RESPONSE_COUNTRY,
+        RESPONSE_CITY,
+        RESPONSE_DISTRICT,
+        RESPONSE_WARD,
+        RESPONSE_STREET,
+        BQ_CREATED_TIME,
+        BQ_UPDATED_TIME
+      )
+    ) AS full_row_key
+  FROM `your-project-id.RAW_EDEP_DATASET.GEOCODING` t
+),
+ranked AS (
+  SELECT
+    *,
+    COUNT(*) OVER (
+      PARTITION BY dedupe_key
+    ) AS dup_cnt,
+    ROW_NUMBER() OVER (
+      PARTITION BY dedupe_key
+      ORDER BY
+        BQ_UPDATED_TIME DESC,
+        BQ_CREATED_TIME DESC,
+        PARTITION_DATE DESC
+    ) AS rn
+  FROM base
+)
+SELECT
+  * EXCEPT (dedupe_key, full_row_key, dup_cnt, rn)
+FROM ranked
+WHERE dup_cnt > 1
+  AND rn > 1;
+
+-- 先檢查各 GEO_TYPE 將刪除多少筆
+SELECT
+  GEO_TYPE,
+  COUNT(*) AS rows_to_delete
+FROM dup_rows
+GROUP BY GEO_TYPE
+ORDER BY rows_to_delete DESC;
+
+-- 抽樣檢查待刪除資料
+SELECT
+  *
+FROM dup_rows
+ORDER BY GEO_TYPE, CUID, SERIAL_NUMBER, BQ_UPDATED_TIME DESC
+LIMIT 100;
+
+-- 正式刪除重複資料
+DELETE FROM `your-project-id.RAW_EDEP_DATASET.GEOCODING`
+WHERE TO_JSON_STRING(
+  STRUCT(
+    PARTITION_DATE,
+    CUID,
+    SERIAL_NUMBER,
+    CREATED_AT,
+    GEO_TYPE,
+    REQUEST_ADDRESS,
+    REQUEST_LONGITUDE,
+    REQUEST_LATITUDE,
+    RESPONSE_PLACE_ID,
+    RESPONSE_ADDRESS,
+    RESPONSE_GLOBAL_CODE,
+    RESPONSE_PLACE_TYPES,
+    RESPONSE_LONGITUDE,
+    RESPONSE_LATITUDE,
+    RESPONSE_COUNTRY,
+    RESPONSE_CITY,
+    RESPONSE_DISTRICT,
+    RESPONSE_WARD,
+    RESPONSE_STREET,
+    BQ_CREATED_TIME,
+    BQ_UPDATED_TIME
+  )
+) IN (
+  SELECT
+    TO_JSON_STRING(
+      STRUCT(
+        PARTITION_DATE,
+        CUID,
+        SERIAL_NUMBER,
+        CREATED_AT,
+        GEO_TYPE,
+        REQUEST_ADDRESS,
+        REQUEST_LONGITUDE,
+        REQUEST_LATITUDE,
+        RESPONSE_PLACE_ID,
+        RESPONSE_ADDRESS,
+        RESPONSE_GLOBAL_CODE,
+        RESPONSE_PLACE_TYPES,
+        RESPONSE_LONGITUDE,
+        RESPONSE_LATITUDE,
+        RESPONSE_COUNTRY,
+        RESPONSE_CITY,
+        RESPONSE_DISTRICT,
+        RESPONSE_WARD,
+        RESPONSE_STREET,
+        BQ_CREATED_TIME,
+        BQ_UPDATED_TIME
+      )
+    )
+  FROM dup_rows
+);
+
+-- 刪除後驗證是否仍有重複
+WITH remain_check AS (
+  SELECT
+    COUNT(*) AS cnt
+  FROM `your-project-id.RAW_EDEP_DATASET.GEOCODING`
+  GROUP BY
+    TO_JSON_STRING(
+      STRUCT(
+        CUID,
+        SERIAL_NUMBER,
+        CREATED_AT,
+        GEO_TYPE,
+        REQUEST_ADDRESS,
+        REQUEST_LONGITUDE,
+        REQUEST_LATITUDE,
+        RESPONSE_PLACE_ID,
+        RESPONSE_ADDRESS,
+        RESPONSE_GLOBAL_CODE,
+        RESPONSE_PLACE_TYPES,
+        RESPONSE_LONGITUDE,
+        RESPONSE_LATITUDE,
+        RESPONSE_COUNTRY,
+        RESPONSE_CITY,
+        RESPONSE_DISTRICT,
+        RESPONSE_WARD,
+        RESPONSE_STREET
+      )
+    )
+  HAVING COUNT(*) > 1
+)
+SELECT COUNT(*) AS remaining_duplicate_groups
+FROM remain_check;

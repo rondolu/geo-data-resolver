@@ -144,6 +144,7 @@
 |---|---|---|---|---|---|
 | 1 | Content-Type | String | N | — | 預設為 `application/json` |
 | 1 | key | String | Y | — | Google API 金鑰（由 Secret Manager 注入） |
+| 1 | fulfill_on_zero_results | String | N | — | 固定帶 `true`，使回應包含 root-level 結構資訊 |
 | 1 | latlng | String | 條件必填 | — | 經緯度，格式為 `"latitude,longitude"` |
 | 1 | address | String | 條件必填 | — | 要查詢的地址（URL encoded） |
 
@@ -154,7 +155,7 @@
 **輸入經緯度（座標 → 地址）**
 
 ```
-GET https://maps.googleapis.com/maps/api/geocode/json?latlng={latlng}&key={API_KEY}
+GET https://maps.googleapis.com/maps/api/geocode/json?latlng={latlng}&key={API_KEY}&fulfill_on_zero_results=true
 ```
 
 範例：
@@ -166,7 +167,7 @@ GET https://maps.googleapis.com/maps/api/geocode/json?latlng=10.8231,106.6297&ke
 **輸入地址（地址 → 座標）**
 
 ```
-GET https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={API_KEY}
+GET https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={API_KEY}&fulfill_on_zero_results=true
 ```
 
 範例：
@@ -182,74 +183,109 @@ GET https://maps.googleapis.com/maps/api/geocode/json?address=268+Ly+Thuong+Kiet
 | LVL | 欄位名稱 | 資料型態 | 說明 |
 |---|---|---|---|
 | 1 | status | string | 請求狀態代碼（見 2.6） |
-| 1 | place_id | string | 地點唯一識別碼 |
-| 1 | formatted_address | string | 完整格式化地址 |
-| 1 | types | list | 地點類型列表 |
-| 1 | address_components | list | 地址組成元件列表 |
+| 1 | plus_code | dict | Root-level Plus Code 資訊 |
+| 2 | compound_code | string | Root-level Plus Code（區域碼，可選） |
+| 2 | global_code | string | Root-level 全域 Plus Code（優先取值來源） |
+| 1 | results | list | Geocoding 結果列表 |
+| 2 | place_id | string | 地點唯一識別碼 |
+| 2 | formatted_address | string | 完整格式化地址 |
+| 2 | types | list | 地點類型列表 |
+| 2 | address_components | list | 地址組成元件列表 |
 | 2 | long_name | string | 地址元件全名 |
 | 2 | short_name | string | 地址元件縮寫 |
 | 2 | types | list | 元件類型（如 `country`、`administrative_area_level_1`） |
-| 1 | geometry | dict | 地理幾何資訊 |
-| 2 | location | dict | 座標位置 |
-| 3 | lat | float | 緯度 |
-| 3 | lng | float | 經度 |
-| 1 | plus_code | dict | Plus Code 資訊 |
-| 2 | global_code | string | 全域 Plus Code |
+| 2 | geometry | dict | 地理幾何資訊 |
+| 3 | location | dict | 座標位置 |
+| 4 | lat | float | 緯度 |
+| 4 | lng | float | 經度 |
+| 2 | plus_code | dict | Result-level Plus Code 資訊（fallback 用） |
+| 3 | global_code | string | Result-level 全域 Plus Code |
 
 ---
 
 ### 2.5 下行/回應 API 範例
 
 ```json
-[
+{
+  "plus_code": {
+    "compound_code": "3PR4+2QX Thoi An Dong, Can Tho, Vietnam",
+    "global_code": "7P273PR4+2QX"
+  },
+  "results": [
     {
-        "status": "OK",
-        "place_id": "ChIJxxxxxxxxxxxxxxxx",
-        "formatted_address": "268 Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Vietnam",
-        "types": ["street_address"],
-        "address_components": [
-            {
-                "long_name": "268",
-                "short_name": "268",
-                "types": ["street_number"]
-            },
-            {
-                "long_name": "Lý Thường Kiệt",
-                "short_name": "Lý Thường Kiệt",
-                "types": ["route"]
-            },
-            {
-                "long_name": "Phường 14",
-                "short_name": "P. 14",
-                "types": ["sublocality_level_1", "sublocality", "political"]
-            },
-            {
-                "long_name": "Quận 10",
-                "short_name": "Q. 10",
-                "types": ["administrative_area_level_2", "political"]
-            },
-            {
-                "long_name": "Thành phố Hồ Chí Minh",
-                "short_name": "TP. HCM",
-                "types": ["administrative_area_level_1", "political"]
-            },
-            {
-                "long_name": "Vietnam",
-                "short_name": "VN",
-                "types": ["country", "political"]
-            }
-        ],
-        "geometry": {
-            "location": {
-                "lat": 10.7734,
-                "lng": 106.6669
-            }
+      "address_components": [
+        {
+          "long_name": "CH Bé Hiền",
+          "short_name": "CH Bé Hiền",
+          "types": ["establishment", "point_of_interest", "transit_station"]
         },
-        "plus_code": {
-            "global_code": "7P28QPX7+QX"
+        {
+          "long_name": "Thới An Đông",
+          "short_name": "Thới An Đông",
+          "types": ["political", "sublocality", "sublocality_level_1"]
+        },
+        {
+          "long_name": "Cần Thơ",
+          "short_name": "Cần Thơ",
+          "types": ["administrative_area_level_1", "political"]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": ["country", "political"]
         }
+      ],
+      "formatted_address": "CH Bé Hiền, Thới An Đông, Cần Thơ, Vietnam",
+      "geometry": {
+        "location": {
+          "lat": 10.08992,
+          "lng": 105.70731
+        },
+        "location_type": "GEOMETRIC_CENTER"
+      },
+      "place_id": "ChIJu8tlmGiGoDERNDK1hZ-1fmE",
+      "plus_code": {
+        "global_code": "7P273PQ4+XW"
+      },
+      "types": ["establishment", "point_of_interest", "transit_station"]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "54/8",
+          "short_name": "54/8",
+          "types": ["street_number"]
+        },
+        {
+          "long_name": "Nguyễn Chí Thanh",
+          "short_name": "Nguyễn Chí Thanh",
+          "types": ["route"]
+        },
+        {
+          "long_name": "Cần Thơ",
+          "short_name": "Cần Thơ",
+          "types": ["administrative_area_level_1", "political"]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": ["country", "political"]
+        }
+      ],
+      "formatted_address": "54/8 Nguyễn Chí Thanh, Thới An Đông, Cần Thơ 900000, Vietnam",
+      "geometry": {
+        "location": {
+          "lat": 10.0897875,
+          "lng": 105.7073582
+        },
+        "location_type": "ROOFTOP"
+      },
+      "place_id": "ChIJL88gmGiGoDERKjEAUmSdZCU",
+      "types": ["premise", "street_address"]
     }
-]
+  ],
+  "status": "OK"
+}
 ```
 
 ---
@@ -259,11 +295,11 @@ GET https://maps.googleapis.com/maps/api/geocode/json?address=268+Ly+Thuong+Kiet
 | RETURNCODE | RETURNDESC | 回傳時機 | 建議處理方式 |
 |---|---|---|---|
 | `OK` | 請求成功，回傳有效結果 | 正常回應 | 繼續儲存下行 |
-| `ZERO_RESULTS` | 查詢成功，但沒有符合的結果 | 地址無效或過於模糊 | 記錄 log，不儲存，標記為不可發查 |
-| `OVER_QUERY_LIMIT` | 已超過每日或每秒的配額限制 | 超出 API 配額 | 指數退避重試（最多 3 次），超過後延至次日 |
+| `ZERO_RESULTS` | 查詢成功，但沒有符合的結果 | 地址無效或過於模糊 | 仍寫入 GCS 原始回應與 BigQuery 基本欄位（回應欄位為 NULL），供後續追蹤 |
+| `OVER_QUERY_LIMIT` | 已超過配額限制 | 可能以 HTTP 429 或 payload status 呈現 | HTTP 429 走指數退避重試（最多 3 次）；若為 payload status 則視為非 OK 回應並跳過 |
 | `REQUEST_DENIED` | 請求被拒絕，通常是 API Key 無效或權限不足 | API Key 異常 | 立即告警（PagerDuty / Slack），停止批次 |
 | `INVALID_REQUEST` | 請求參數錯誤或缺少必要欄位 | 上行資料缺少 address 或 latlng | 記錄 log，跳過該筆，繼續下一筆 |
-| `UNKNOWN_ERROR` | 伺服器端錯誤，請稍後重試 | Google 服務端臨時異常 | 固定間隔重試（30 秒），最多 3 次 |
+| `UNKNOWN_ERROR` | 伺服器端錯誤，請稍後重試 | Google 服務端臨時異常 | 固定間隔重試（30 秒），最多 3 次；重試耗盡後中止批次 |
 
 ---
 
@@ -287,16 +323,22 @@ GET https://maps.googleapis.com/maps/api/geocode/json?address=268+Ly+Thuong+Kiet
 
 **Step 2 — 篩選未發查資料**
 
-分別依照附錄一、二、三的 SQL 邏輯，篩選出尚未出現在 `RAW_EDEP_DATASET.GEOCODING` 的資料列進行發查。
+目前程式預設由 `GeocodingBatchProcessService.STAGE_SQL` 指向 `sql/test_geocoding_query_*.sql` 進行發查資料載入（測試名單），每批最多 3 筆。
+
+正式查詢版 SQL 仍保留於 `sql/geocoding_query_*.sql`，邏輯上以 `NOT EXISTS` 進行去重。
 
 **Step 3 — 呼叫 Google Maps Geocoding API**
 
 - 通訊地址 / 戶籍地址：以 `address` 欄位發查
-- 簽約經緯度：以 `latlng` 欄位發查（格式：`latitude,longitude`，取小數點後 4 位）
+- 簽約經緯度：以 `latlng` 欄位發查（格式：`latitude,longitude`，使用來源原始精度）
 
 **Step 4 — 更新已發查資料**
 
-依照附錄四、五、六的 SQL 邏輯，將已完成發查的資料寫回 `RAW_EDEP_DATASET.GEOCODING`。
+每批次都會先執行對應 update SQL：
+
+- `contact_address`：`sql/geocoding_update_contact_address.sql`
+- `residence_address`：`sql/geocoding_update_residence_address.sql`
+- `contract_coordinates`：`sql/geocoding_update_contract_coordinates.sql`（目前整份 SQL 以註解停用）
 
 ---
 
@@ -335,27 +377,29 @@ gs://ovslxvdo01-{env}-rawdata-api/GOOGLEMAPS/GEOCODING/{data_date}_{serial_numbe
 
 | 欄位 | 資料來源 | 欄位說明 |
 |---|---|---|
-| PARTITION_DATE | BQ `DATE` 格式 | 發查日期 |
+| PARTITION_DATE | 來源 `partition_date + 1 day`（程式邏輯） | 寫入分區日期 |
 | CUID | `HES.customer.CUID` | 客戶唯一識別碼 |
 | SERIAL_NUMBER | `HES.application.SERIAL_NUMBER` | 申貸序號 |
 | CREATED_AT | `HES.application.CREATED_AT` | 申貸建立時間 |
 | GEO_TYPE | — | 發查類型：`RESIDENCE_ADDRESS` / `CONTACT_ADDRESS` / `CONTRACT_COORDINATES` |
-| REQUEST_LONGITUDE | `VMB.apply_info.LONGITUDE`（僅 CONTRACT_COORDINATES），取小數點後 4 位，其他為 NULL | 請求經度 |
-| REQUEST_LATITUDE | `VMB.apply_info.LATITUDE`（僅 CONTRACT_COORDINATES），取小數點後 4 位，其他為 NULL | 請求緯度 |
+| REQUEST_LONGITUDE | `VMB.apply_info.LONGITUDE`（僅 CONTRACT_COORDINATES），以字串寫入，其它為 NULL | 請求經度 |
+| REQUEST_LATITUDE | `VMB.apply_info.LATITUDE`（僅 CONTRACT_COORDINATES），以字串寫入，其它為 NULL | 請求緯度 |
 | REQUEST_ADDRESS | 依 GEO_TYPE：RESIDENCE→`PERMANENT_DETAILED_ADDRESS`；CONTACT→`CURRENT_DETAILED_ADDRESS`；CONTRACT→NULL | 請求地址 |
 | RESPONSE_PLACE_ID | 下行 `place_id`，取不到為 NULL | 回應地點 ID |
 | RESPONSE_ADDRESS | 下行 `formatted_address`，取不到為 NULL | 回應完整地址 |
-| RESPONSE_GLOBAL_CODE | 下行 `plus_code.global_code`，取不到為 NULL | 回應 Plus Code |
+| RESPONSE_GLOBAL_CODE | 優先取 root-level `plus_code.global_code`；若無值則取 `results[0].plus_code.global_code`，仍取不到為 NULL | 回應 Plus Code |
 | RESPONSE_PLACE_TYPES | 下行 `types`（LIST），以逗號合併為字串，取不到為 NULL | 回應地點類型 |
-| RESPONSE_LONGITUDE | 下行 `geometry.location.lng`，取不到為 NULL | 回應經度 |
-| RESPONSE_LATITUDE | 下行 `geometry.location.lat`，取不到為 NULL | 回應緯度 |
+| RESPONSE_LONGITUDE | 下行 `geometry.location.lng`，以字串寫入，取不到為 NULL | 回應經度 |
+| RESPONSE_LATITUDE | 下行 `geometry.location.lat`，以字串寫入，取不到為 NULL | 回應緯度 |
 | RESPONSE_COUNTRY | `address_components` 中 `types` 含 `country` 的 `long_name`，取不到為 NULL | 回應國家 |
 | RESPONSE_CITY | `address_components` 中 `types` 含 `administrative_area_level_1` 的 `long_name`，取不到為 NULL | 回應城市/省份 |
 | RESPONSE_DISTRICT | `address_components` 中 `types` 含 `administrative_area_level_2` 的 `long_name`，取不到為 NULL | 回應縣市/區 |
 | RESPONSE_WARD | `address_components` 中 `types` 含 `sublocality_level_1` 的 `long_name`，取不到為 NULL | 回應鄉鎮/街道 |
 | RESPONSE_STREET | `address_components` 中 `types` 含 `route` 的 `long_name`，取不到為 NULL | 回應路名 |
-| BQ_CREATED_TIME |  BQ `DATETIME` 格式 | 建立時間 |
-| BQ_UPDATED_TIME |  BQ `DATETIME` 格式 | 最後更新時間 |
+| BQ_CREATED_TIME | UTC timestamp 字串（`%Y-%m-%dT%H:%M:%S.%f`） | 建立時間 |
+| BQ_UPDATED_TIME | UTC timestamp 字串（`%Y-%m-%dT%H:%M:%S.%f`） | 最後更新時間 |
+
+> 補充：`ZERO_RESULTS` 也會寫入一筆資料，僅保留 request 與 key 欄位，response 欄位多為 NULL。
 
 ---
 
@@ -468,16 +512,16 @@ gs://ovslxvdo01-{env}-rawdata-api/GOOGLEMAPS/GEOCODING/{data_date}_{serial_numbe
 | 每次作業處理筆數 | 無上限（依當日新增資料量） | 批次全量處理 |
 | 單筆 API 呼叫回應時間 | ≤ 500 ms（P95） | 依 Google Maps SLA |
 | 每日作業完成時間 | ≤ 2 小時 | 需於 03:00 VNT 前完成，供早盤風控分析使用 |
-| API 呼叫速率 | ≤ 50 QPS | 遵循 Google Maps 免費配額上限，超出需調整 |
+| API 呼叫速率 | 依 `qpm_limit` 控制（目前環境多為 1200 QPM） | 程式以 QPM 節流（`min_interval = 60 / qpm_limit`） |
 
 > **配額管理：** 每日 Geocoding API 呼叫上限依 GCP 專案設定，預設免費額度為 40,000 次/月（超出按量計費）。若每日資料量超過 1,300 筆，需評估升級為付費方案或申請配額提升。
 
-> **效能可行性驗算：**
+> **效能可行性驗算（以 1200 QPM 為例）：**
 >
-> - 作業時間限制：01:00 → 03:00 VNT = **2 小時 = 7,200 秒**
-> - QPS 上限：50 次/秒
-> - 理論最大處理量：50 QPS × 7,200 秒 = **360,000 筆/日**（已扣除網路延遲估算需降至 70% = 約 252,000 筆）
-> - 若每日新增資料遠超此上限，需評估：a) 提高 QPS 配額（付費方案），或 b) 分批執行（多個 Cloud Run Job 並行）
+> - 作業時間限制：01:00 → 03:00 VNT = **2 小時 = 120 分鐘**
+> - QPM 上限：1,200 次/分鐘（約 20 QPS）
+> - 理論最大處理量：1,200 × 120 = **144,000 筆/日**（未扣除重試與網路延遲）
+> - 若每日新增資料遠超此上限，需評估：a) 提高配額，或 b) 分批執行（多個 Job）
 
 ---
 
@@ -495,12 +539,13 @@ gs://ovslxvdo01-{env}-rawdata-api/GOOGLEMAPS/GEOCODING/{data_date}_{serial_numbe
 
 | 錯誤類型 | 重試策略 | 告警 | 備註 |
 |---|---|---|---|
-| `OVER_QUERY_LIMIT` | 指數退避（1s → 2s → 4s），最多 3 次 | 若連續 3 次失敗，送出告警 | 避免在每秒配額密集期發送 |
-| `UNKNOWN_ERROR` | 固定間隔重試（30s），最多 3 次 | 若連續 3 次失敗，記錄 log 並跳過 | Google 服務端臨時問題 |
+|  HTTP `429/5xx` | 指數退避（約 1s → 2s → 4s，加上隨機小數），最多 3 次 | 若重試後仍失敗，記錄錯誤 | Client 層重試邏輯 |
+| `OVER_QUERY_LIMIT`（payload status） | 不額外重試 | 記錄 log 並跳過 | 目前視為非 `OK` 回應 |
+| `UNKNOWN_ERROR` | 固定間隔重試（30s），最多 3 次 | 連續失敗後中止批次 | `REQUEST_DENIED` 同為致命錯誤 |
 | `REQUEST_DENIED` | 不重試 | 立即告警（高優先級），停止整批作業 | API Key 失效或配額耗盡 |
-| `INVALID_REQUEST` | 不重試 | 記錄 log，標記該筆為無效 | 上行資料問題，非 API 問題 |
-| `ZERO_RESULTS` | 不重試 | 記錄至 log，不寫入 BigQuery | 地址無法解析 |
-| 網路逾時 | 固定間隔重試（10s），最多 3 次 | 若連續 3 次失敗，記錄 log 並跳過 | 設定 API 呼叫 timeout = 10s |
+| `INVALID_REQUEST` | 不重試 | 記錄 log，跳過該筆 | 上行資料問題，非 API 問題 |
+| `ZERO_RESULTS` | 不重試 | 寫入 BigQuery 與 GCS（回應欄位多為 NULL） | 地址無法解析但保留稽核軌跡 |
+| 網路逾時 | 立即重試（最多 3 次） | 若連續失敗，記錄錯誤 | timeout 由設定檔控制（預設 30 秒） |
 
 ---
 
@@ -508,8 +553,8 @@ gs://ovslxvdo01-{env}-rawdata-api/GOOGLEMAPS/GEOCODING/{data_date}_{serial_numbe
 
 為避免對同一地址或座標重複呼叫 Google Maps API（節省配額與費用），已在 SQL 邏輯中實作去重：
 
-- **通訊地址 / 戶籍地址：** 若 `REQUEST_ADDRESS` 已存在於 `RAW_EDEP_DATASET.GEOCODING`，則跳過該筆（見附錄一、二 SQL `LEFT JOIN` 條件）
-- **簽約經緯度：** 若 `REQUEST_LONGITUDE` + `REQUEST_LATITUDE` 組合已存在，則跳過（見附錄三 SQL）
+- **通訊地址 / 戶籍地址：** 以兩層 `NOT EXISTS` 去重（`SERIAL_NUMBER`、`REQUEST_ADDRESS`）
+- **簽約經緯度：** 以兩層 `NOT EXISTS` 去重（`SERIAL_NUMBER`、`REQUEST_LONGITUDE` + `REQUEST_LATITUDE`）
 - **SERIAL_NUMBER 去重：** 同一申貸序號若已有任一類型的發查紀錄，亦不重複發查
 
 ---
@@ -551,10 +596,10 @@ gs://ovslxvdo01-{env}-rawdata-api/GOOGLEMAPS/GEOCODING/{data_date}_{serial_numbe
 | **GEO_TYPE** | Geocoding 發查類型：`CONTACT_ADDRESS`（通訊地址）/ `RESIDENCE_ADDRESS`（戶籍地址）/ `CONTRACT_COORDINATES`（簽約經緯度） |
 | **Geocoding** | 地理編碼，將地址字串轉換為經緯度座標 |
 | **Reverse Geocoding** | 反向地理編碼，將經緯度座標轉換為地址字串 |
-| **QPS** | Queries Per Second，每秒查詢次數（API 呼叫速率上限單位） |
+| **QPM** | Queries Per Minute，每分鐘查詢次數（程式節流使用的速率單位） |
 | **VNT** | Vietnam Time，越南標準時間（UTC+7） |
 | **env** | 環境代碼：`dev`（開發）/ `stg`（測試）/ `prd`（正式） |
-| **RESPONSE_ADDRESS** | 文件保留原始欄位名稱（注意：少一個 d），與現有資料表 Schema 保持一致；如需修正請同步更新 BQ Schema |
+| **RESPONSE_ADDRESS** | Geocoding 下行 `formatted_address` 對應欄位（現行程式與 SQL 皆使用此拼字） |
 
 ---
 
@@ -565,24 +610,24 @@ CREATE TABLE IF NOT EXISTS `RAW_EDEP_DATASET.GEOCODING` (
     PARTITION_DATE      DATE          NOT NULL OPTIONS(description="發查日期，BQ 預設 CURRENT_DATE()"),
     CUID                STRING        NOT NULL OPTIONS(description="客戶唯一識別碼"),
     SERIAL_NUMBER       STRING        NOT NULL OPTIONS(description="申貸序號"),
-    CREATED_AT          TIMESTAMP              OPTIONS(description="申貸建立時間，來自 HES.APPLICATION.CREATED_AT"),
+  CREATED_AT          TIMESTAMP              OPTIONS(description="申貸建立時間，來自 HES.APPLICATION.CREATED_AT"),
     GEO_TYPE            STRING        NOT NULL OPTIONS(description="發查類型: CONTACT_ADDRESS / RESIDENCE_ADDRESS / CONTRACT_COORDINATES"),
-    REQUEST_LONGITUDE   FLOAT64                OPTIONS(description="請求經度，僅 CONTRACT_COORDINATES 有值，取小數點後4位"),
-    REQUEST_LATITUDE    FLOAT64                OPTIONS(description="請求緯度，僅 CONTRACT_COORDINATES 有值，取小數點後4位"),
+  REQUEST_LONGITUDE   STRING                 OPTIONS(description="請求經度，僅 CONTRACT_COORDINATES 有值"),
+  REQUEST_LATITUDE    STRING                 OPTIONS(description="請求緯度，僅 CONTRACT_COORDINATES 有值"),
     REQUEST_ADDRESS     STRING                 OPTIONS(description="請求地址，地址類型發查時有值"),
     RESPONSE_PLACE_ID   STRING                 OPTIONS(description="Google Maps place_id"),
     RESPONSE_ADDRESS     STRING                 OPTIONS(description="完整格式化地址（formatted_address）"),
     RESPONSE_GLOBAL_CODE STRING               OPTIONS(description="Plus Code global_code"),
     RESPONSE_PLACE_TYPES STRING               OPTIONS(description="types LIST，以逗號合併為字串"),
-    RESPONSE_LONGITUDE  FLOAT64                OPTIONS(description="回應經度 geometry.location.lng"),
-    RESPONSE_LATITUDE   FLOAT64                OPTIONS(description="回應緯度 geometry.location.lat"),
+  RESPONSE_LONGITUDE  STRING                 OPTIONS(description="回應經度 geometry.location.lng"),
+  RESPONSE_LATITUDE   STRING                 OPTIONS(description="回應緯度 geometry.location.lat"),
     RESPONSE_COUNTRY    STRING                 OPTIONS(description="國家名稱（address_components type=country）"),
     RESPONSE_CITY       STRING                 OPTIONS(description="城市/省份（administrative_area_level_1）"),
     RESPONSE_DISTRICT   STRING                 OPTIONS(description="縣市/區（administrative_area_level_2）"),
     RESPONSE_WARD       STRING                 OPTIONS(description="鄉鎮/街道（sublocality_level_1）"),
     RESPONSE_STREET     STRING                 OPTIONS(description="路名（route）"),
-    BQ_CREATED_TIME     TIMESTAMP              OPTIONS(description="BQ 建立時間，預設 CURRENT_TIMESTAMP()"),
-    BQ_UPDATED_TIME     TIMESTAMP              OPTIONS(description="BQ 更新時間，預設 CURRENT_TIMESTAMP()")
+  BQ_CREATED_TIME     DATETIME               OPTIONS(description="BQ 建立時間"),
+  BQ_UPDATED_TIME     DATETIME               OPTIONS(description="BQ 更新時間")
 )
 PARTITION BY PARTITION_DATE
 OPTIONS(
@@ -598,42 +643,60 @@ OPTIONS(
 ### 附錄一 — 通訊地址發查
 
 ```sql
--- 通訊地址：取出尚未發查的客戶通訊地址
 WITH latest_hes_application AS (
-    SELECT id,
-           serial_number,
-           created_at,
-           customer_id,
-      FROM `RAW_HES_DATASET.APPLICATION`
-   QUALIFY ROW_NUMBER() OVER (
-           PARTITION BY id
-            ORDER BY TIMESTAMP(created_at) DESC,
-                     SAFE_CAST(finished_at AS TIMESTAMP) DESC,
-                     PARTITION_DATE DESC
-           ) = 1
+  SELECT
+    id,
+    serial_number,
+    created_at,
+    PARTITION_DATE AS partition_date,
+    customer_id,
+    BQ_UPDATED_TIME
+  FROM `RAW_HES_DATASET.APPLICATION`
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY id
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
 ),
 latest_hes_customer AS (
-    SELECT id,
-           cuid,
-           current_detailed_address,
-      FROM `RAW_HES_DATASET.CUSTOMER`
-     WHERE UPPER(COALESCE(current_detailed_address, 'NULL')) != 'NULL'
-   QUALIFY ROW_NUMBER() OVER (
-           PARTITION BY cuid
-            ORDER BY BQ_UPDATED_TIME DESC
-           ) = 1
+  SELECT
+    id,
+    cuid,
+    current_application_id,
+    current_detailed_address
+  FROM `RAW_HES_DATASET.CUSTOMER`
+  WHERE UPPER(COALESCE(current_detailed_address, 'NULL')) != 'NULL'
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY cuid
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
 )
-SELECT appl.serial_number,
-       appl.created_at,
-       cust.cuid,
-       cust.current_detailed_address
-  FROM latest_hes_application AS appl
-  JOIN latest_hes_customer AS cust ON appl.customer_id = cust.id
- LEFT JOIN `RAW_EDEP_DATASET.GEOCODING` AS geo_coding
-        ON appl.serial_number = geo_coding.serial_number
-        OR cust.current_detailed_address = geo_coding.REQUEST_ADDRESS
- WHERE geo_coding.SERIAL_NUMBER IS NULL
-   AND geo_coding.REQUEST_ADDRESS IS NULL
+SELECT
+  appl.serial_number,
+  appl.created_at,
+  appl.partition_date,
+  cust.cuid,
+  cust.current_detailed_address AS request_address,
+  CAST(NULL AS FLOAT64) AS request_longitude,
+  CAST(NULL AS FLOAT64) AS request_latitude
+FROM latest_hes_application AS appl
+JOIN latest_hes_customer AS cust
+  ON appl.customer_id = cust.id
+  AND appl.id = cust.current_application_id
+WHERE NOT EXISTS (
+  SELECT 1
+  FROM `RAW_EDEP_DATASET.GEOCODING` AS geo_coding
+  WHERE geo_coding.GEO_TYPE = 'CONTACT_ADDRESS'
+    AND geo_coding.SERIAL_NUMBER = appl.serial_number
+)
+  AND NOT EXISTS (
+    SELECT 1
+    FROM `RAW_EDEP_DATASET.GEOCODING` AS geo_coding
+    WHERE geo_coding.GEO_TYPE = 'CONTACT_ADDRESS'
+      AND UPPER(COALESCE(geo_coding.REQUEST_ADDRESS, 'NULL')) != 'NULL'
+      AND geo_coding.REQUEST_ADDRESS = cust.current_detailed_address
+  )
+ORDER BY serial_number DESC
+LIMIT 500
 ```
 
 ---
@@ -641,42 +704,60 @@ SELECT appl.serial_number,
 ### 附錄二 — 戶籍地址發查
 
 ```sql
--- 戶籍地址：取出尚未發查的客戶戶籍地址
 WITH latest_hes_application AS (
-    SELECT id,
-           serial_number,
-           created_at,
-           customer_id,
-      FROM `RAW_HES_DATASET.APPLICATION`
-   QUALIFY ROW_NUMBER() OVER (
-           PARTITION BY id
-            ORDER BY TIMESTAMP(created_at) DESC,
-                     SAFE_CAST(finished_at AS TIMESTAMP) DESC,
-                     PARTITION_DATE DESC
-           ) = 1
+  SELECT
+    id,
+    serial_number,
+    created_at,
+    PARTITION_DATE AS partition_date,
+    customer_id,
+    BQ_UPDATED_TIME
+  FROM `RAW_HES_DATASET.APPLICATION`
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY id
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
 ),
 latest_hes_customer AS (
-    SELECT id,
-           cuid,
-           permanent_detailed_address,
-      FROM `RAW_HES_DATASET.CUSTOMER`
-     WHERE UPPER(COALESCE(permanent_detailed_address, 'NULL')) != 'NULL'
-   QUALIFY ROW_NUMBER() OVER (
-           PARTITION BY cuid
-            ORDER BY BQ_UPDATED_TIME DESC
-           ) = 1
+  SELECT
+    id,
+    cuid,
+    current_application_id,
+    permanent_detailed_address
+  FROM `RAW_HES_DATASET.CUSTOMER`
+  WHERE UPPER(COALESCE(permanent_detailed_address, 'NULL')) != 'NULL'
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY cuid
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
 )
-SELECT appl.serial_number,
-       appl.created_at,
-       cust.cuid,
-       cust.permanent_detailed_address
-  FROM latest_hes_application AS appl
-  JOIN latest_hes_customer AS cust ON appl.customer_id = cust.id
- LEFT JOIN `RAW_EDEP_DATASET.GEOCODING` AS geo_coding
-        ON appl.serial_number = geo_coding.serial_number
-        OR cust.permanent_detailed_address = geo_coding.REQUEST_ADDRESS
- WHERE geo_coding.SERIAL_NUMBER IS NULL
-   AND geo_coding.REQUEST_ADDRESS IS NULL
+SELECT
+  appl.serial_number,
+  appl.created_at,
+  appl.partition_date,
+  cust.cuid,
+  cust.permanent_detailed_address AS request_address,
+  CAST(NULL AS FLOAT64) AS request_longitude,
+  CAST(NULL AS FLOAT64) AS request_latitude
+FROM latest_hes_application AS appl
+JOIN latest_hes_customer AS cust
+  ON appl.customer_id = cust.id
+  AND appl.id = cust.current_application_id
+WHERE NOT EXISTS (
+  SELECT 1
+  FROM `RAW_EDEP_DATASET.GEOCODING` AS geo_coding
+  WHERE geo_coding.GEO_TYPE = 'RESIDENCE_ADDRESS'
+    AND geo_coding.SERIAL_NUMBER = appl.serial_number
+)
+  AND NOT EXISTS (
+    SELECT 1
+    FROM `RAW_EDEP_DATASET.GEOCODING` AS geo_coding
+    WHERE geo_coding.GEO_TYPE = 'RESIDENCE_ADDRESS'
+      AND UPPER(COALESCE(geo_coding.REQUEST_ADDRESS, 'NULL')) != 'NULL'
+      AND geo_coding.REQUEST_ADDRESS = cust.permanent_detailed_address
+  )
+ORDER BY serial_number DESC
+LIMIT 500
 ```
 
 ---
@@ -684,56 +765,76 @@ SELECT appl.serial_number,
 ### 附錄三 — 簽約經緯度發查
 
 ```sql
--- 簽約經緯度：取出尚未發查的客戶簽約座標
 WITH latest_hes_application AS (
-    SELECT id,
-           serial_number,
-           created_at,
-           customer_id,
-      FROM `RAW_HES_DATASET.APPLICATION`
-   QUALIFY ROW_NUMBER() OVER (
-           PARTITION BY id
-            ORDER BY TIMESTAMP(created_at) DESC,
-                     SAFE_CAST(finished_at AS TIMESTAMP) DESC,
-                     PARTITION_DATE DESC
-           ) = 1
+  SELECT
+    id,
+    serial_number,
+    created_at,
+    PARTITION_DATE AS partition_date,
+    customer_id,
+    BQ_UPDATED_TIME
+  FROM `RAW_HES_DATASET.APPLICATION`
+  WHERE status = 'ACTIVE'
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY id
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
 ),
 latest_hes_customer AS (
-    SELECT id,
-           cuid,
-      FROM `RAW_HES_DATASET.CUSTOMER`
-   QUALIFY ROW_NUMBER() OVER (
-           PARTITION BY cuid
-            ORDER BY BQ_UPDATED_TIME DESC
-           ) = 1
+  SELECT
+    id,
+    cuid,
+    current_application_id
+  FROM `RAW_HES_DATASET.CUSTOMER`
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY cuid
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
 ),
 latest_vmb_apply_info AS (
-    SELECT cuid,
-           ROUND(longitude, 4) AS longitude,
-           ROUND(latitude, 4) AS latitude,
-      FROM `RAW_VMB_DATASET.APPLY_INFO`
-     WHERE UPPER(COALESCE(longitude, 'NULL')) != 'NULL'
-       AND UPPER(COALESCE(latitude, 'NULL')) != 'NULL'
-   QUALIFY ROW_NUMBER() OVER (
-           PARTITION BY cuid
-            ORDER BY BQ_UPDATED_TIME DESC
-           ) = 1
+  SELECT
+    cuid,
+    SAFE_CAST(longitude AS FLOAT64) AS longitude,
+    SAFE_CAST(latitude AS FLOAT64) AS latitude
+  FROM `RAW_VMB_DATASET.APPLY_INFO`
+  WHERE UPPER(COALESCE(longitude, 'NULL')) != 'NULL'
+    AND UPPER(COALESCE(latitude, 'NULL')) != 'NULL'
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY cuid
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
 )
-SELECT appl.serial_number,
-       appl.created_at,
-       cust.cuid,
-       apply_info.longitude,
-       apply_info.latitude
-  FROM latest_hes_application AS appl
-  JOIN latest_hes_customer AS cust ON appl.customer_id = cust.id
-  JOIN latest_vmb_apply_info AS apply_info ON cust.cuid = apply_info.cuid
- LEFT JOIN `RAW_EDEP_DATASET.GEOCODING` AS geo_coding
-        ON appl.serial_number = geo_coding.serial_number
-        OR apply_info.longitude = geo_coding.REQUEST_LONGITUDE
-        OR apply_info.latitude = geo_coding.REQUEST_LATITUDE
- WHERE geo_coding.SERIAL_NUMBER IS NULL
-   AND geo_coding.REQUEST_LONGITUDE IS NULL
-   AND geo_coding.REQUEST_LATITUDE IS NULL
+SELECT
+  appl.serial_number,
+  appl.created_at,
+  appl.partition_date,
+  cust.cuid,
+  CAST(NULL AS STRING) AS request_address,
+  CAST(apply_info.longitude AS STRING) AS request_longitude,
+  CAST(apply_info.latitude AS STRING) AS request_latitude
+FROM latest_hes_application AS appl
+JOIN latest_hes_customer AS cust
+  ON appl.customer_id = cust.id
+  AND appl.id = cust.current_application_id
+JOIN latest_vmb_apply_info AS apply_info
+  ON cust.cuid = apply_info.cuid
+WHERE NOT EXISTS (
+  SELECT 1
+  FROM `RAW_EDEP_DATASET.GEOCODING` AS geo_coding
+  WHERE geo_coding.GEO_TYPE = 'CONTRACT_COORDINATES'
+    AND geo_coding.SERIAL_NUMBER = appl.serial_number
+)
+  AND NOT EXISTS (
+    SELECT 1
+    FROM `RAW_EDEP_DATASET.GEOCODING` AS geo_coding
+    WHERE geo_coding.GEO_TYPE = 'CONTRACT_COORDINATES'
+      AND SAFE_CAST(geo_coding.REQUEST_LONGITUDE AS FLOAT64) IS NOT NULL
+      AND SAFE_CAST(geo_coding.REQUEST_LATITUDE AS FLOAT64) IS NOT NULL
+      AND SAFE_CAST(geo_coding.REQUEST_LONGITUDE AS FLOAT64) = apply_info.longitude
+      AND SAFE_CAST(geo_coding.REQUEST_LATITUDE AS FLOAT64) = apply_info.latitude
+  )
+ORDER BY serial_number DESC
+LIMIT 500
 ```
 
 ---
@@ -741,307 +842,343 @@ SELECT appl.serial_number,
 ### 附錄四 — 更新已發查通訊地址
 
 ```sql
--- 更新通訊地址資訊
-   INSERT INTO `RAW_EDEP_DATASET.GEOCODING` (
-          CUID,
-          SERIAL_NUMBER,
-          CREATED_AT,
-          GEO_TYPE,
-          REQUEST_ADDRESS,
-          RESPONSE_PLACE_ID,
-          RESPONSE_ADRESS,
-          RESPONSE_GLOBAL_CODE,
-          RESPONSE_PLACE_TYPES,
-          RESPONSE_LONGITUDE,
-          RESPONSE_LATITUDE,
-          RESPONSE_COUNTRY,
-          RESPONSE_CITY,
-          RESPONSE_DISTRICT,
-          RESPONSE_WARD,
-          RESPONSE_STREET
-          )
-     WITH latest_hes_application AS (
-             SELECT id,
-                    serial_number,
-                    created_at,
-                    customer_id,
-               FROM `RAW_HES_DATASET.APPLICATION`
-            QUALIFY ROW_NUMBER() OVER (
-                    PARTITION BY id
-                     ORDER BY TIMESTAMP(created_at) DESC,
-                              SAFE_CAST(finished_at AS TIMESTAMP) DESC,
-                              PARTITION_DATE DESC
-                    ) = 1
-          ),
-          latest_hes_customer AS (
-             SELECT id,
-                    cuid,
-                    current_detailed_address,
-               FROM `RAW_HES_DATASET.CUSTOMER`
-              WHERE UPPER(COALESCE(current_detailed_address, "NULL")) != "NULL"
-            QUALIFY ROW_NUMBER() OVER (
-                    PARTITION BY cuid
-                     ORDER BY BQ_UPDATED_TIME DESC
-                    ) = 1
-          ),
-          geocoding_serial_number_list AS (
-             SELECT DISTINCT serial_number
-               FROM `RAW_EDEP_DATASET.GEOCODING`
-              WHERE GEO_TYPE = "CONTACT_ADDRESS"
-          ),
-          distinct_adress AS (
-             SELECT DISTINCT REQUEST_ADDRESS,
-                    RESPONSE_PLACE_ID,
-                    RESPONSE_ADRESS,
-                    RESPONSE_GLOBAL_CODE,
-                    RESPONSE_PLACE_TYPES,
-                    RESPONSE_LONGITUDE,
-                    RESPONSE_LATITUDE,
-                    RESPONSE_COUNTRY,
-                    RESPONSE_CITY,
-                    RESPONSE_DISTRICT,
-                    RESPONSE_WARD,
-                    RESPONSE_STREET,
-               FROM `RAW_EDEP_DATASET.GEOCODING`
-              WHERE GEO_TYPE = "CONTACT_ADDRESS"
-                AND UPPER(COALESCE(RESPONSE_ADRESS, "NULL")) IS NOT NULL
-          )
-   SELECT cust.cuid,
-          appl.serial_number,
-          appl.created_at,
-          "CONTACT_ADDRESS",
-          cust.current_detailed_address,
-          geo_coding.RESPONSE_PLACE_ID,
-          geo_coding.RESPONSE_ADRESS,
-          geo_coding.RESPONSE_GLOBAL_CODE,
-          geo_coding.RESPONSE_PLACE_TYPES,
-          geo_coding.RESPONSE_LONGITUDE,
-          geo_coding.RESPONSE_LATITUDE,
-          geo_coding.RESPONSE_COUNTRY,
-          geo_coding.RESPONSE_CITY,
-          geo_coding.RESPONSE_DISTRICT,
-          geo_coding.RESPONSE_WARD,
-          geo_coding.RESPONSE_STREET,
-     FROM latest_hes_application AS appl
-     JOIN latest_hes_customer AS cust ON appl.customer_id = cust.id
-LEFT JOIN geocoding_serial_number_list AS ser_list ON appl.serial_number = ser_list.serial_number
-LEFT JOIN distinct_adress AS geo_coding ON cust.current_detailed_address = geo_coding.REQUEST_ADDRESS
-    WHERE ser_list.serial_number IS NULL
-      AND geo_coding.REQUEST_ADDRESS IS NOT NULL
-
+-- 參照 SASD 附錄四：更新已發查通訊地址
+INSERT INTO `RAW_EDEP_DATASET.GEOCODING` (
+  PARTITION_DATE,
+  CUID,
+  SERIAL_NUMBER,
+  CREATED_AT,
+  GEO_TYPE,
+  REQUEST_ADDRESS,
+  RESPONSE_PLACE_ID,
+  RESPONSE_ADDRESS,
+  RESPONSE_GLOBAL_CODE,
+  RESPONSE_PLACE_TYPES,
+  RESPONSE_LONGITUDE,
+  RESPONSE_LATITUDE,
+  RESPONSE_COUNTRY,
+  RESPONSE_CITY,
+  RESPONSE_DISTRICT,
+  RESPONSE_WARD,
+  RESPONSE_STREET,
+  BQ_CREATED_TIME,
+  BQ_UPDATED_TIME
+)
+WITH latest_hes_application AS (
+  SELECT
+    id,
+    serial_number,
+    created_at,
+    PARTITION_DATE AS partition_date,
+    customer_id,
+    BQ_UPDATED_TIME
+  FROM `RAW_HES_DATASET.APPLICATION`
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY id
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
+),
+latest_hes_customer AS (
+  SELECT
+    id,
+    cuid,
+    current_application_id,
+    current_detailed_address
+  FROM `RAW_HES_DATASET.CUSTOMER`
+  WHERE UPPER(COALESCE(current_detailed_address, 'NULL')) != 'NULL'
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY cuid
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
+),
+geocoding_serial_number_list AS (
+  SELECT DISTINCT serial_number
+  FROM `RAW_EDEP_DATASET.GEOCODING`
+  WHERE GEO_TYPE = 'CONTACT_ADDRESS'
+),
+distinct_address AS (
+  SELECT DISTINCT
+    REQUEST_ADDRESS,
+    RESPONSE_PLACE_ID,
+    RESPONSE_ADDRESS,
+    RESPONSE_GLOBAL_CODE,
+    RESPONSE_PLACE_TYPES,
+    RESPONSE_LONGITUDE,
+    RESPONSE_LATITUDE,
+    RESPONSE_COUNTRY,
+    RESPONSE_CITY,
+    RESPONSE_DISTRICT,
+    RESPONSE_WARD,
+    RESPONSE_STREET
+  FROM `RAW_EDEP_DATASET.GEOCODING`
+  WHERE GEO_TYPE = 'CONTACT_ADDRESS'
+    AND UPPER(COALESCE(RESPONSE_ADDRESS, 'NULL')) != 'NULL'
+)
+SELECT
+  CURRENT_DATE(),
+  cust.cuid,
+  appl.serial_number,
+  appl.created_at,
+  'CONTACT_ADDRESS',
+  cust.current_detailed_address,
+  geo_coding.RESPONSE_PLACE_ID,
+  geo_coding.RESPONSE_ADDRESS,
+  geo_coding.RESPONSE_GLOBAL_CODE,
+  geo_coding.RESPONSE_PLACE_TYPES,
+  geo_coding.RESPONSE_LONGITUDE,
+  geo_coding.RESPONSE_LATITUDE,
+  geo_coding.RESPONSE_COUNTRY,
+  geo_coding.RESPONSE_CITY,
+  geo_coding.RESPONSE_DISTRICT,
+  geo_coding.RESPONSE_WARD,
+  geo_coding.RESPONSE_STREET,
+  DATETIME(SAFE_CAST(appl.created_at AS TIMESTAMP), 'UTC'),
+  CURRENT_DATETIME('UTC')
+FROM latest_hes_application AS appl
+JOIN latest_hes_customer AS cust
+  ON appl.customer_id = cust.id
+  AND appl.id = cust.current_application_id
+LEFT JOIN geocoding_serial_number_list AS ser_list
+  ON appl.serial_number = ser_list.serial_number
+LEFT JOIN distinct_address AS geo_coding
+  ON cust.current_detailed_address = geo_coding.REQUEST_ADDRESS
+WHERE ser_list.serial_number IS NULL
+  AND geo_coding.REQUEST_ADDRESS IS NOT NULL
 ```
 
 ---
 
 ### 附錄五 — 更新已發查戶籍地址
 
-> 邏輯同附錄四，將 `CONTACT_ADDRESS` 替換為 `RESIDENCE_ADDRESS`，欄位改為 `permanent_detailed_address`，可依此類推撰寫。
-
 ```sql
--- 更新戶籍地址資訊
-   INSERT INTO `RAW_EDEP_DATASET.GEOCODING` (
-          CUID,
-          SERIAL_NUMBER,
-          CREATED_AT,
-          GEO_TYPE,
-          REQUEST_ADDRESS,
-          RESPONSE_PLACE_ID,
-          RESPONSE_ADRESS,
-          RESPONSE_GLOBAL_CODE,
-          RESPONSE_PLACE_TYPES,
-          RESPONSE_LONGITUDE,
-          RESPONSE_LATITUDE,
-          RESPONSE_COUNTRY,
-          RESPONSE_CITY,
-          RESPONSE_DISTRICT,
-          RESPONSE_WARD,
-          RESPONSE_STREET
-          )
-     WITH latest_hes_application AS (
-             SELECT id,
-                    serial_number,
-                    created_at,
-                    customer_id,
-               FROM `RAW_HES_DATASET.APPLICATION`
-            QUALIFY ROW_NUMBER() OVER (
-                    PARTITION BY id
-                     ORDER BY TIMESTAMP(created_at) DESC,
-                              SAFE_CAST(finished_at AS TIMESTAMP) DESC,
-                              PARTITION_DATE DESC
-                    ) = 1
-          ),
-          latest_hes_customer AS (
-             SELECT id,
-                    cuid,
-                    permanent_detailed_address,
-               FROM `RAW_HES_DATASET.CUSTOMER`
-              WHERE UPPER(COALESCE(permanent_detailed_address, "NULL")) != "NULL"
-            QUALIFY ROW_NUMBER() OVER (
-                    PARTITION BY cuid
-                     ORDER BY BQ_UPDATED_TIME DESC
-                    ) = 1
-          ),
-          geocoding_serial_number_list AS (
-             SELECT DISTINCT serial_number
-               FROM `RAW_EDEP_DATASET.GEOCODING`
-              WHERE GEO_TYPE = "RESIDENCE_ADDRESS"
-          ),
-          distinct_adress AS (
-             SELECT DISTINCT REQUEST_ADDRESS,
-                    RESPONSE_PLACE_ID,
-                    RESPONSE_ADRESS,
-                    RESPONSE_GLOBAL_CODE,
-                    RESPONSE_PLACE_TYPES,
-                    RESPONSE_LONGITUDE,
-                    RESPONSE_LATITUDE,
-                    RESPONSE_COUNTRY,
-                    RESPONSE_CITY,
-                    RESPONSE_DISTRICT,
-                    RESPONSE_WARD,
-                    RESPONSE_STREET,
-               FROM `RAW_EDEP_DATASET.GEOCODING`
-              WHERE GEO_TYPE = "RESIDENCE_ADDRESS"
-                AND UPPER(COALESCE(RESPONSE_ADRESS, "NULL")) IS NOT NULL
-          )
-   SELECT cust.cuid,
-          appl.serial_number,
-          appl.created_at,
-          "RESIDENCE_ADDRESS",
-          cust.permanent_detailed_address,
-          geo_coding.RESPONSE_PLACE_ID,
-          geo_coding.RESPONSE_ADRESS,
-          geo_coding.RESPONSE_GLOBAL_CODE,
-          geo_coding.RESPONSE_PLACE_TYPES,
-          geo_coding.RESPONSE_LONGITUDE,
-          geo_coding.RESPONSE_LATITUDE,
-          geo_coding.RESPONSE_COUNTRY,
-          geo_coding.RESPONSE_CITY,
-          geo_coding.RESPONSE_DISTRICT,
-          geo_coding.RESPONSE_WARD,
-          geo_coding.RESPONSE_STREET,
-     FROM latest_hes_application AS appl
-     JOIN latest_hes_customer AS cust ON appl.customer_id = cust.id
-LEFT JOIN geocoding_serial_number_list AS ser_list ON appl.serial_number = ser_list.serial_number
-LEFT JOIN distinct_adress AS geo_coding ON cust.permanent_detailed_address = geo_coding.REQUEST_ADDRESS
-    WHERE ser_list.serial_number IS NULL
-      AND geo_coding.REQUEST_ADDRESS IS NOT NULL
-
+-- 參照 SASD 附錄五：更新已發查戶籍地址
+INSERT INTO `RAW_EDEP_DATASET.GEOCODING` (
+  PARTITION_DATE,
+  CUID,
+  SERIAL_NUMBER,
+  CREATED_AT,
+  GEO_TYPE,
+  REQUEST_ADDRESS,
+  RESPONSE_PLACE_ID,
+  RESPONSE_ADDRESS,
+  RESPONSE_GLOBAL_CODE,
+  RESPONSE_PLACE_TYPES,
+  RESPONSE_LONGITUDE,
+  RESPONSE_LATITUDE,
+  RESPONSE_COUNTRY,
+  RESPONSE_CITY,
+  RESPONSE_DISTRICT,
+  RESPONSE_WARD,
+  RESPONSE_STREET,
+  BQ_CREATED_TIME,
+  BQ_UPDATED_TIME
+)
+WITH latest_hes_application AS (
+  SELECT
+    id,
+    serial_number,
+    created_at,
+    PARTITION_DATE AS partition_date,
+    customer_id,
+    BQ_UPDATED_TIME
+  FROM `RAW_HES_DATASET.APPLICATION`
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY id
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
+),
+latest_hes_customer AS (
+  SELECT
+    id,
+    cuid,
+    current_application_id,
+    permanent_detailed_address
+  FROM `RAW_HES_DATASET.CUSTOMER`
+  WHERE UPPER(COALESCE(permanent_detailed_address, 'NULL')) != 'NULL'
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY cuid
+    ORDER BY BQ_UPDATED_TIME DESC
+  ) = 1
+),
+geocoding_serial_number_list AS (
+  SELECT DISTINCT serial_number
+  FROM `RAW_EDEP_DATASET.GEOCODING`
+  WHERE GEO_TYPE = 'RESIDENCE_ADDRESS'
+),
+distinct_address AS (
+  SELECT DISTINCT
+    REQUEST_ADDRESS,
+    RESPONSE_PLACE_ID,
+    RESPONSE_ADDRESS,
+    RESPONSE_GLOBAL_CODE,
+    RESPONSE_PLACE_TYPES,
+    RESPONSE_LONGITUDE,
+    RESPONSE_LATITUDE,
+    RESPONSE_COUNTRY,
+    RESPONSE_CITY,
+    RESPONSE_DISTRICT,
+    RESPONSE_WARD,
+    RESPONSE_STREET
+  FROM `RAW_EDEP_DATASET.GEOCODING`
+  WHERE GEO_TYPE = 'RESIDENCE_ADDRESS'
+    AND UPPER(COALESCE(RESPONSE_ADDRESS, 'NULL')) != 'NULL'
+)
+SELECT
+  CURRENT_DATE(),
+  cust.cuid,
+  appl.serial_number,
+  appl.created_at,
+  'RESIDENCE_ADDRESS',
+  cust.permanent_detailed_address,
+  geo_coding.RESPONSE_PLACE_ID,
+  geo_coding.RESPONSE_ADDRESS,
+  geo_coding.RESPONSE_GLOBAL_CODE,
+  geo_coding.RESPONSE_PLACE_TYPES,
+  geo_coding.RESPONSE_LONGITUDE,
+  geo_coding.RESPONSE_LATITUDE,
+  geo_coding.RESPONSE_COUNTRY,
+  geo_coding.RESPONSE_CITY,
+  geo_coding.RESPONSE_DISTRICT,
+  geo_coding.RESPONSE_WARD,
+  geo_coding.RESPONSE_STREET,
+  DATETIME(SAFE_CAST(appl.created_at AS TIMESTAMP), 'UTC'),
+  CURRENT_DATETIME('UTC')
+FROM latest_hes_application AS appl
+JOIN latest_hes_customer AS cust
+  ON appl.customer_id = cust.id
+  AND appl.id = cust.current_application_id
+LEFT JOIN geocoding_serial_number_list AS ser_list
+  ON appl.serial_number = ser_list.serial_number
+LEFT JOIN distinct_address AS geo_coding
+  ON cust.permanent_detailed_address = geo_coding.REQUEST_ADDRESS
+WHERE ser_list.serial_number IS NULL
+  AND geo_coding.REQUEST_ADDRESS IS NOT NULL
 ```
 
 ---
 
 ### 附錄六 — 更新已發查經緯度
 
-> 邏輯同附錄四，將 `GEO_TYPE` 替換為 `CONTRACT_COORDINATES`，請求欄位改為 `longitude` / `latitude`，可依此類推撰寫。
-
 ```sql
--- 更新通訊地址資訊
-   INSERT INTO `RAW_EDEP_DATASET.GEOCODING` (
-          CUID,
-          SERIAL_NUMBER,
-          CREATED_AT,
-          GEO_TYPE,
-          REQUEST_LONGITUDE,
-          REQUEST_LATITUDE,
-          RESPONSE_PLACE_ID,
-          RESPONSE_ADRESS,
-          RESPONSE_GLOBAL_CODE,
-          RESPONSE_PLACE_TYPES,
-          RESPONSE_LONGITUDE,
-          RESPONSE_LATITUDE,
-          RESPONSE_COUNTRY,
-          RESPONSE_CITY,
-          RESPONSE_DISTRICT,
-          RESPONSE_WARD,
-          RESPONSE_STREET
-          )
-     WITH latest_hes_application AS (
-             SELECT id,
-                    serial_number,
-                    created_at,
-                    customer_id,
-                    DATE(TIMESTAMP(created_at)) AS data_date
-               FROM `RAW_HES_DATASET.APPLICATION`
-            QUALIFY ROW_NUMBER() OVER (
-                    PARTITION BY id
-                     ORDER BY TIMESTAMP(created_at) DESC,
-                              SAFE_CAST(finished_at AS TIMESTAMP) DESC,
-                              PARTITION_DATE DESC
-                    ) = 1
-          ),
-          latest_hes_customer AS (
-             SELECT id,
-                    cuid,
-               FROM `RAW_HES_DATASET.CUSTOMER`
-              WHERE UPPER(COALESCE(current_detailed_address, "NULL")) != "NULL"
-            QUALIFY ROW_NUMBER() OVER (
-                    PARTITION BY cuid
-                     ORDER BY BQ_UPDATED_TIME DESC
-                    ) = 1
-          ),
-          latest_vmb_apply_info AS (
-             SELECT cuid,
-                    ROUND(longitude, 4) AS longitude,
-                    ROUND(latitude, 4) AS latitude,
-               FROM `RAW_VMB_DATASET.APPLY_INFO`
-              WHERE UPPER(COALESCE(longitude, "NULL")) != "NULL"
-                AND UPPER(COALESCE(latitude, "NULL")) != "NULL"
-            QUALIFY ROW_NUMBER() OVER (
-                    PARTITION BY cuid
-                     ORDER BY BQ_UPDATED_TIME DESC
-                    ) = 1
-          ),
-          geocoding_serial_number_list AS (
-             SELECT DISTINCT serial_number
-               FROM `RAW_EDEP_DATASET.GEOCODING`
-              WHERE GEO_TYPE = "CONTRACT_COORDINATES"
-          ),
-          distinct_coordinates AS (
-             SELECT DISTINCT REQUEST_LONGITUDE,
-                    REQUEST_LATITUDE,
-                    RESPONSE_PLACE_ID,
-                    RESPONSE_ADRESS,
-                    RESPONSE_GLOBAL_CODE,
-                    RESPONSE_PLACE_TYPES,
-                    RESPONSE_LONGITUDE,
-                    RESPONSE_LATITUDE,
-                    RESPONSE_COUNTRY,
-                    RESPONSE_CITY,
-                    RESPONSE_DISTRICT,
-                    RESPONSE_WARD,
-                    RESPONSE_STREET,
-               FROM `RAW_EDEP_DATASET.GEOCODING`
-              WHERE GEO_TYPE = "CONTRACT_COORDINATES"
-                AND UPPER(COALESCE(REQUEST_LONGITUDE, "NULL")) IS NOT NULL
-                AND UPPER(COALESCE(REQUEST_LATITUDE, "NULL")) IS NOT NULL
-          )
-   SELECT cust.cuid,
-          appl.serial_number,
-          appl.created_at,
-          "CONTRACT_COORDINATES",
-          apply_info.longitude,
-          apply_info.latitude,
-          geo_coding.RESPONSE_PLACE_ID,
-          geo_coding.RESPONSE_ADRESS,
-          geo_coding.RESPONSE_GLOBAL_CODE,
-          geo_coding.RESPONSE_PLACE_TYPES,
-          geo_coding.RESPONSE_LONGITUDE,
-          geo_coding.RESPONSE_LATITUDE,
-          geo_coding.RESPONSE_COUNTRY,
-          geo_coding.RESPONSE_CITY,
-          geo_coding.RESPONSE_DISTRICT,
-          geo_coding.RESPONSE_WARD,
-          geo_coding.RESPONSE_STREET,
-     FROM latest_hes_application AS appl
-     JOIN latest_hes_customer AS cust ON appl.customer_id = cust.id
-     JOIN latest_vmb_apply_info AS apply_info ON cust.cuid = apply_info.cuid
-LEFT JOIN geocoding_serial_number_list AS ser_list ON appl.serial_number = ser_list.serial_number
-LEFT JOIN distinct_coordinates AS geo_coding ON apply_info.longitude = geo_coding.REQUEST_LONGITUDE
-      AND apply_info.latitude = geo_coding.REQUEST_LATITUDE
-    WHERE ser_list.serial_number IS NULL
-      AND geo_coding.REQUEST_LONGITUDE IS NOT NULL
-      AND geo_coding.REQUEST_LATITUDE IS NOT NULL
-
+-- -- 參照 SASD 附錄六：更新已發查經緯度
+-- INSERT INTO `RAW_EDEP_DATASET.GEOCODING` (
+--   PARTITION_DATE,
+--   CUID,
+--   SERIAL_NUMBER,
+--   CREATED_AT,
+--   GEO_TYPE,
+--   REQUEST_LONGITUDE,
+--   REQUEST_LATITUDE,
+--   RESPONSE_PLACE_ID,
+--   RESPONSE_ADDRESS,
+--   RESPONSE_GLOBAL_CODE,
+--   RESPONSE_PLACE_TYPES,
+--   RESPONSE_LONGITUDE,
+--   RESPONSE_LATITUDE,
+--   RESPONSE_COUNTRY,
+--   RESPONSE_CITY,
+--   RESPONSE_DISTRICT,
+--   RESPONSE_WARD,
+--   RESPONSE_STREET,
+--   BQ_CREATED_TIME,
+--   BQ_UPDATED_TIME
+-- )
+-- WITH latest_hes_application AS (
+--   SELECT
+--     id,
+--     serial_number,
+--     created_at,
+--     PARTITION_DATE AS partition_date,
+--     customer_id,
+--     BQ_UPDATED_TIME
+--   FROM `RAW_HES_DATASET.APPLICATION`
+--   QUALIFY ROW_NUMBER() OVER (
+--     PARTITION BY id
+--     ORDER BY BQ_UPDATED_TIME DESC
+--   ) = 1
+-- ),
+-- latest_hes_customer AS (
+--   SELECT
+--     id,
+--     cuid
+--   FROM `RAW_HES_DATASET.CUSTOMER`
+--   QUALIFY ROW_NUMBER() OVER (
+--     PARTITION BY cuid
+--     ORDER BY BQ_UPDATED_TIME DESC
+--   ) = 1
+-- ),
+-- latest_vmb_apply_info AS (
+--   SELECT
+--     cuid,
+--     ROUND(SAFE_CAST(longitude AS FLOAT64), 4) AS longitude,
+--     ROUND(SAFE_CAST(latitude AS FLOAT64), 4) AS latitude
+--   FROM `RAW_VMB_DATASET.APPLY_INFO`
+--   WHERE SAFE_CAST(longitude AS FLOAT64) IS NOT NULL
+--     AND SAFE_CAST(latitude AS FLOAT64) IS NOT NULL
+--   QUALIFY ROW_NUMBER() OVER (
+--     PARTITION BY cuid
+--     ORDER BY BQ_UPDATED_TIME DESC
+--   ) = 1
+-- ),
+-- geocoding_serial_number_list AS (
+--   SELECT DISTINCT serial_number
+--   FROM `RAW_EDEP_DATASET.GEOCODING`
+--   WHERE GEO_TYPE = 'CONTRACT_COORDINATES'
+-- ),
+-- distinct_coordinates AS (
+--   SELECT DISTINCT
+--     REQUEST_LONGITUDE,
+--     REQUEST_LATITUDE,
+--     RESPONSE_PLACE_ID,
+--     RESPONSE_ADDRESS,
+--     RESPONSE_GLOBAL_CODE,
+--     RESPONSE_PLACE_TYPES,
+--     RESPONSE_LONGITUDE,
+--     RESPONSE_LATITUDE,
+--     RESPONSE_COUNTRY,
+--     RESPONSE_CITY,
+--     RESPONSE_DISTRICT,
+--     RESPONSE_WARD,
+--     RESPONSE_STREET
+--   FROM `RAW_EDEP_DATASET.GEOCODING`
+--   WHERE GEO_TYPE = 'CONTRACT_COORDINATES'
+--     AND UPPER(COALESCE(REQUEST_LONGITUDE, 'NULL')) != 'NULL'
+--     AND UPPER(COALESCE(REQUEST_LATITUDE, 'NULL')) != 'NULL'
+-- )
+-- SELECT
+--   DATE_ADD(appl.partition_date, INTERVAL 1 DAY),
+--   cust.cuid,
+--   appl.serial_number,
+--   appl.created_at,
+--   'CONTRACT_COORDINATES',
+--   CAST(apply_info.longitude AS STRING),
+--   CAST(apply_info.latitude AS STRING),
+--   geo_coding.RESPONSE_PLACE_ID,
+--   geo_coding.RESPONSE_ADDRESS,
+--   geo_coding.RESPONSE_GLOBAL_CODE,
+--   geo_coding.RESPONSE_PLACE_TYPES,
+--   geo_coding.RESPONSE_LONGITUDE,
+--   geo_coding.RESPONSE_LATITUDE,
+--   geo_coding.RESPONSE_COUNTRY,
+--   geo_coding.RESPONSE_CITY,
+--   geo_coding.RESPONSE_DISTRICT,
+--   geo_coding.RESPONSE_WARD,
+--   geo_coding.RESPONSE_STREET,
+--   DATETIME(SAFE_CAST(appl.created_at AS TIMESTAMP), 'UTC'),
+--   CURRENT_DATETIME('UTC')
+-- FROM latest_hes_application AS appl
+-- JOIN latest_hes_customer AS cust
+--   ON appl.customer_id = cust.id
+-- JOIN latest_vmb_apply_info AS apply_info
+--   ON cust.cuid = apply_info.cuid
+-- LEFT JOIN geocoding_serial_number_list AS ser_list
+--   ON appl.serial_number = ser_list.serial_number
+-- LEFT JOIN distinct_coordinates AS geo_coding
+--   ON apply_info.longitude = SAFE_CAST(geo_coding.REQUEST_LONGITUDE AS FLOAT64)
+--  AND apply_info.latitude = SAFE_CAST(geo_coding.REQUEST_LATITUDE AS FLOAT64)
+-- WHERE ser_list.serial_number IS NULL
+--   AND geo_coding.REQUEST_LONGITUDE IS NOT NULL
+--   AND geo_coding.REQUEST_LATITUDE IS NOT NULL
 ```
 
 ---
