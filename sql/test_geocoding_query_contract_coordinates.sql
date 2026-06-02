@@ -48,20 +48,20 @@ SELECT
   request_latitude
 FROM (
   SELECT
-    "TEST_COORD_20260505_0001" AS serial_number,
-    "2026-04-10 09:20:00+00" AS created_at,
-    DATE "2026-05-05" AS partition_date,
-    "cuid-test-coord-20260505_0001" AS cuid,
-    "106.6296798" AS request_longitude,
-    "10.8522167" AS request_latitude
+    "TEST_COORD_20260517_0001" AS serial_number,
+    "2026-05-17 09:20:00+00" AS created_at,
+    DATE "2026-05-17" AS partition_date,
+    "cuid-test-coord-20260517_0001" AS cuid,
+    "107.1833992" AS request_longitude,
+    "10.4966813" AS request_latitude
   UNION ALL
   SELECT
-    "TEST_COORD_20260505_0002" AS serial_number,
-    "2026-04-10 09:21:00+00" AS created_at,
-    DATE "2026-05-05" AS partition_date,
-    "cuid-test-coord-20260505_0002" AS cuid,
-    "106.7401" AS request_longitude,
-    "11.0541" AS request_latitude
+    "TEST_COORD_2026050517_0002" AS serial_number,
+    "2026-05-17 09:21:00+00" AS created_at,
+    DATE "2026-05-17" AS partition_date,
+    "cuid-test-coord-20260517_0002" AS cuid,
+    "105.9323115" AS request_longitude,
+    "10.1740503" AS request_latitude
   -- UNION ALL
   -- SELECT
   --   "TEST_COORD_0003" AS serial_number,

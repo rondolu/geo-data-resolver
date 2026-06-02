@@ -6,7 +6,7 @@
 default_google_maps_api: &default_google_maps_api
   timeout: 30
   max_retries: 3
-  batch_size: 3
+  batch_size: 500
   base_url: "https://areainsights.googleapis.com"
   geocoding_base_url: "https://maps.googleapis.com/maps/api/geocode/json"
   poi_scenarios:

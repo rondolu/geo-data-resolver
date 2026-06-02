@@ -6,7 +6,7 @@
 import sys
 import types
 from datetime import date
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
 
@@ -134,6 +134,35 @@ def test_non_first_batch_runs_update_sql(_mock_gcs, _mock_api, _mock_bq):
     mock_update.assert_called_once_with("contact_address")
     mock_load.assert_called_once_with("contact_address")
     mock_single.assert_called_once()
+
+
+@patch("application.geocoding_batch_process_service.BigQueryService")
+@patch("application.geocoding_batch_process_service.GoogleMapsAPIService")
+@patch("application.geocoding_batch_process_service.GCSService")
+def test_contract_coordinates_skip_update_sql(_mock_gcs, _mock_api, mock_bq):
+    """驗證 contract_coordinates 會跳過更新 SQL。"""
+    service = GeocodingBatchProcessService()
+
+    service._execute_update_sql("contract_coordinates")
+
+    mock_bq.return_value.query.assert_not_called()
+
+
+@patch("application.geocoding_batch_process_service.BigQueryService")
+@patch("application.geocoding_batch_process_service.GoogleMapsAPIService")
+@patch("application.geocoding_batch_process_service.GCSService")
+def test_contact_address_still_executes_update_sql(_mock_gcs, _mock_api, mock_bq):
+    """驗證 contact_address 仍會執行更新 SQL。"""
+    service = GeocodingBatchProcessService()
+
+    with patch(
+        "application.geocoding_batch_process_service.open",
+        mock_open(read_data="SELECT 1"),
+        create=True,
+    ):
+        service._execute_update_sql("contact_address")
+
+    mock_bq.return_value.query.assert_called_once_with("SELECT 1")
 
 
 @patch("application.geocoding_batch_process_service.BigQueryService")

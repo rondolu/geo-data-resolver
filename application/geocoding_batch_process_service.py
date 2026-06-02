@@ -37,17 +37,17 @@ class GeocodingBatchProcessService:
     STAGE_SQL: Dict[str, Dict[str, str]] = {
         "contact_address": {
             "update": "geocoding_update_contact_address.sql",
-            "query": "test_geocoding_query_contact_address.sql",
+            "query": "geocoding_query_contact_address.sql",
             "geo_type": "CONTACT_ADDRESS",
         },
         "residence_address": {
             "update": "geocoding_update_residence_address.sql",
-            "query": "test_geocoding_query_residence_address.sql",
+            "query": "geocoding_query_residence_address.sql",
             "geo_type": "RESIDENCE_ADDRESS",
         },
         "contract_coordinates": {
             "update": "geocoding_update_contract_coordinates.sql",
-            "query": "test_geocoding_query_contract_coordinates.sql",
+            "query": "geocoding_query_contract_coordinates.sql",
             "geo_type": "CONTRACT_COORDINATES",
         },
     }
@@ -98,6 +98,10 @@ class GeocodingBatchProcessService:
 
     @Logging.logtobq(task_code="32")
     def _execute_update_sql(self, task_type: str) -> None:
+        if task_type == "contract_coordinates":
+            _logger.log_text("Skipping update SQL for contract_coordinates", severity="Info")
+            return
+
         try:
             sql_file = self.STAGE_SQL[task_type]["update"]
             sql = open(self._sql_path(sql_file), "r", encoding="utf-8").read()

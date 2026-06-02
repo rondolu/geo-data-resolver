@@ -1,4 +1,4 @@
-"""服務層封裝（對齊 Credolab 架構）。"""
+"""服務層封裝"""
 
 __all__ = ["DataflowService", "GoogleMapsAPIService", "GeocodingFlowService"]
 
