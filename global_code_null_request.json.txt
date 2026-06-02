@@ -1,0 +1,767 @@
+{
+  "plus_code": {
+    "compound_code": "VH7W+X66 Xuan Thoi Son, Ho Chi Minh, Vietnam",
+    "global_code": "7P28VH7W+X66"
+  },
+  "results": [
+    {
+      "address_components": [
+        {
+          "long_name": "65/3A",
+          "short_name": "65/3A",
+          "types": [
+            "street_number"
+          ]
+        },
+        {
+          "long_name": "Hòa Bình ấp Tân Tiến",
+          "short_name": "Hòa Bình ấp Tân Tiến",
+          "types": [
+            "route"
+          ]
+        },
+        {
+          "long_name": "Xuân Thới Sơn",
+          "short_name": "Xuân Thới Sơn",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Hồ Chí Minh",
+          "short_name": "Hồ Chí Minh",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "65/3A Hòa Bình ấp Tân Tiến, Xuân Thới Sơn, Hồ Chí Minh, Vietnam",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 10.8649669,
+            "lng": 106.5955787
+          },
+          "southwest": {
+            "lat": 10.8647825,
+            "lng": 106.5953825
+          }
+        },
+        "location": {
+          "lat": 10.8648747,
+          "lng": 106.5954806
+        },
+        "location_type": "ROOFTOP",
+        "viewport": {
+          "northeast": {
+            "lat": 10.8662236802915,
+            "lng": 106.5968295802915
+          },
+          "southwest": {
+            "lat": 10.8635257197085,
+            "lng": 106.5941316197085
+          }
+        }
+      },
+      "navigation_points": [
+        {
+          "location": {
+            "latitude": 10.8648559,
+            "longitude": 106.5954487
+          }
+        }
+      ],
+      "place_id": "ChIJvTLwxmgqdTERoH4liqg3p7Q",
+      "types": [
+        "premise",
+        "street_address"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "82/4",
+          "short_name": "82/4",
+          "types": [
+            "street_number"
+          ]
+        },
+        {
+          "long_name": "Hòa Bình ấp Tân Tiến",
+          "short_name": "Hòa Bình ấp Tân Tiến",
+          "types": [
+            "route"
+          ]
+        },
+        {
+          "long_name": "Xuân Thới Sơn",
+          "short_name": "Xuân Thới Sơn",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Hồ Chí Minh",
+          "short_name": "Hồ Chí Minh",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "82/4 Hòa Bình ấp Tân Tiến, Xuân Thới Sơn, Hồ Chí Minh, Vietnam",
+      "geometry": {
+        "location": {
+          "lat": 10.8650339,
+          "lng": 106.5954332
+        },
+        "location_type": "ROOFTOP",
+        "viewport": {
+          "northeast": {
+            "lat": 10.8663828802915,
+            "lng": 106.5967821802915
+          },
+          "southwest": {
+            "lat": 10.8636849197085,
+            "lng": 106.5940842197085
+          }
+        }
+      },
+      "navigation_points": [
+        {
+          "location": {
+            "latitude": 10.8649934,
+            "longitude": 106.5953648
+          }
+        }
+      ],
+      "place_id": "ChIJkRkyxmgqdTERfOWIBdNgU7E",
+      "types": [
+        "street_address",
+        "subpremise"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "98/5",
+          "short_name": "98/5",
+          "types": [
+            "street_number"
+          ]
+        },
+        {
+          "long_name": "Hòa Bình ấp Tân Tiến",
+          "short_name": "Hòa Bình ấp Tân Tiến",
+          "types": [
+            "route"
+          ]
+        },
+        {
+          "long_name": "Xuân Thới Sơn",
+          "short_name": "Xuân Thới Sơn",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Hồ Chí Minh",
+          "short_name": "Hồ Chí Minh",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "98/5 Hòa Bình ấp Tân Tiến, Xuân Thới Sơn, Hồ Chí Minh, Vietnam",
+      "geometry": {
+        "location": {
+          "lat": 10.864966,
+          "lng": 106.595283
+        },
+        "location_type": "ROOFTOP",
+        "viewport": {
+          "northeast": {
+            "lat": 10.8663149802915,
+            "lng": 106.5966319802915
+          },
+          "southwest": {
+            "lat": 10.8636170197085,
+            "lng": 106.5939340197085
+          }
+        }
+      },
+      "navigation_points": [
+        {
+          "location": {
+            "latitude": 10.8649439,
+            "longitude": 106.5952455
+          }
+        }
+      ],
+      "place_id": "ChIJ-1CFx2gqdTERwIu0YM1jNgA",
+      "plus_code": {
+        "compound_code": "VH7W+X4 Xuan Thoi Son, Ho Chi Minh, Vietnam",
+        "global_code": "7P28VH7W+X4"
+      },
+      "types": [
+        "street_address"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "99/8a",
+          "short_name": "99/8a",
+          "types": [
+            "premise"
+          ]
+        },
+        {
+          "long_name": "Đường Võ Thị Hồi",
+          "short_name": "Đ. Võ Thị Hồi",
+          "types": [
+            "route"
+          ]
+        },
+        {
+          "long_name": "Xuân Thới Sơn",
+          "short_name": "Xuân Thới Sơn",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Hồ Chí Minh",
+          "short_name": "Hồ Chí Minh",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "99/8a, Đ. Võ Thị Hồi, Xuân Thới Sơn, Hồ Chí Minh, Vietnam",
+      "geometry": {
+        "location": {
+          "lat": 10.8646462,
+          "lng": 106.5957023
+        },
+        "location_type": "ROOFTOP",
+        "viewport": {
+          "northeast": {
+            "lat": 10.8659951802915,
+            "lng": 106.5970512802915
+          },
+          "southwest": {
+            "lat": 10.8632972197085,
+            "lng": 106.5943533197085
+          }
+        }
+      },
+      "navigation_points": [
+        {
+          "location": {
+            "latitude": 10.8646024,
+            "longitude": 106.5956972
+          }
+        }
+      ],
+      "place_id": "ChIJdYJcr-8rdTERs_akFnm00s0",
+      "plus_code": {
+        "compound_code": "VH7W+V7 Xuan Thoi Son, Ho Chi Minh, Vietnam",
+        "global_code": "7P28VH7W+V7"
+      },
+      "types": [
+        "cafe",
+        "establishment",
+        "food",
+        "point_of_interest"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "VH7W+X6",
+          "short_name": "VH7W+X6",
+          "types": [
+            "plus_code"
+          ]
+        },
+        {
+          "long_name": "Xuan Thoi Son",
+          "short_name": "Xuan Thoi Son",
+          "types": [
+            "political",
+            "sublocality",
+            "sublocality_level_1"
+          ]
+        },
+        {
+          "long_name": "Xuan Thoi Son",
+          "short_name": "Xuan Thoi Son",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Ho Chi Minh",
+          "short_name": "Ho Chi Minh",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "VH7W+X6 Xuan Thoi Son, Ho Chi Minh, Vietnam",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 10.865,
+            "lng": 106.595625
+          },
+          "southwest": {
+            "lat": 10.864875,
+            "lng": 106.5955
+          }
+        },
+        "location": {
+          "lat": 10.8649,
+          "lng": 106.5955
+        },
+        "location_type": "GEOMETRIC_CENTER",
+        "viewport": {
+          "northeast": {
+            "lat": 10.8662864802915,
+            "lng": 106.5969114802915
+          },
+          "southwest": {
+            "lat": 10.8635885197085,
+            "lng": 106.5942135197085
+          }
+        }
+      },
+      "place_id": "GhIJ7J48LNS6JUARJzEIrBymWkA",
+      "plus_code": {
+        "compound_code": "VH7W+X6 Xuan Thoi Son, Ho Chi Minh, Vietnam",
+        "global_code": "7P28VH7W+X6"
+      },
+      "types": [
+        "plus_code"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Đường Chưa Đặt Tên",
+          "short_name": "Đường Chưa Đặt Tên",
+          "types": [
+            "route"
+          ]
+        },
+        {
+          "long_name": "Xuân Thới Sơn",
+          "short_name": "Xuân Thới Sơn",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Hồ Chí Minh",
+          "short_name": "Hồ Chí Minh",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "Đường Chưa Đặt Tên, Xuân Thới Sơn, Hồ Chí Minh, Vietnam",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 10.8651725,
+            "lng": 106.5956163
+          },
+          "southwest": {
+            "lat": 10.8644589,
+            "lng": 106.5951807
+          }
+        },
+        "location": {
+          "lat": 10.8648157,
+          "lng": 106.5953985
+        },
+        "location_type": "GEOMETRIC_CENTER",
+        "viewport": {
+          "northeast": {
+            "lat": 10.8661646802915,
+            "lng": 106.5967474802915
+          },
+          "southwest": {
+            "lat": 10.8634667197085,
+            "lng": 106.5940495197085
+          }
+        }
+      },
+      "place_id": "ChIJ9eQjx2gqdTERmHJIXXtjpfQ",
+      "types": [
+        "route"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Xuan Thoi Son",
+          "short_name": "Xuan Thoi Son",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Xuan Thoi Son",
+          "short_name": "Xuan Thoi Son",
+          "types": [
+            "political",
+            "sublocality",
+            "sublocality_level_1"
+          ]
+        },
+        {
+          "long_name": "Ho Chi Minh",
+          "short_name": "Ho Chi Minh",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "Xuan Thoi Son, Ho Chi Minh, Vietnam",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 10.920878,
+            "lng": 106.6061869
+          },
+          "southwest": {
+            "lat": 10.855526,
+            "lng": 106.495618
+          }
+        },
+        "location": {
+          "lat": 10.8790427,
+          "lng": 106.5525145
+        },
+        "location_type": "APPROXIMATE",
+        "viewport": {
+          "northeast": {
+            "lat": 10.920878,
+            "lng": 106.6061869
+          },
+          "southwest": {
+            "lat": 10.855526,
+            "lng": 106.495618
+          }
+        }
+      },
+      "place_id": "ChIJB4TB_6EqdTERBO_Wd2BE9Iw",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Xuan Thoi Son",
+          "short_name": "Xuan Thoi Son",
+          "types": [
+            "political",
+            "sublocality",
+            "sublocality_level_1"
+          ]
+        },
+        {
+          "long_name": "Xuan Thoi Son",
+          "short_name": "Xuan Thoi Son",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Ho Chi Minh",
+          "short_name": "Ho Chi Minh",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "Xuan Thoi Son, Ho Chi Minh, Vietnam",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 10.920878,
+            "lng": 106.6061869
+          },
+          "southwest": {
+            "lat": 10.855526,
+            "lng": 106.495618
+          }
+        },
+        "location": {
+          "lat": 10.8957333,
+          "lng": 106.5466221
+        },
+        "location_type": "APPROXIMATE",
+        "viewport": {
+          "northeast": {
+            "lat": 10.920878,
+            "lng": 106.6061869
+          },
+          "southwest": {
+            "lat": 10.855526,
+            "lng": 106.495618
+          }
+        }
+      },
+      "place_id": "ChIJE-2Z3l3VdDERvO5Hb9byGv0",
+      "types": [
+        "political",
+        "sublocality",
+        "sublocality_level_1"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Ho Chi Minh",
+          "short_name": "Ho Chi Minh",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "Ho Chi Minh, Vietnam",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 11.50104,
+            "lng": 107.5719281
+          },
+          "southwest": {
+            "lat": 8.627206,
+            "lng": 106.3263571
+          }
+        },
+        "location": {
+          "lat": 10.746903,
+          "lng": 106.676292
+        },
+        "location_type": "APPROXIMATE",
+        "viewport": {
+          "northeast": {
+            "lat": 11.50104,
+            "lng": 107.5719281
+          },
+          "southwest": {
+            "lat": 8.627206,
+            "lng": 106.3263571
+          }
+        }
+      },
+      "place_id": "ChIJI9kl2-8udTERFHIryt1Uz0s",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Ho Chi Minh City",
+          "short_name": "Ho Chi Minh City",
+          "types": [
+            "locality",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Ho Chi Minh",
+          "short_name": "Ho Chi Minh",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "Ho Chi Minh City, Ho Chi Minh, Vietnam",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 11.50104,
+            "lng": 107.5719281
+          },
+          "southwest": {
+            "lat": 8.627206,
+            "lng": 106.3263571
+          }
+        },
+        "location": {
+          "lat": 10.8230989,
+          "lng": 106.6296638
+        },
+        "location_type": "APPROXIMATE",
+        "viewport": {
+          "northeast": {
+            "lat": 11.50104,
+            "lng": 107.5719281
+          },
+          "southwest": {
+            "lat": 8.627206,
+            "lng": 106.3263571
+          }
+        }
+      },
+      "place_id": "ChIJ0T2NLikpdTERKxE8d61aX_E",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Vietnam",
+          "short_name": "VN",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "Vietnam",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 23.3926504,
+            "lng": 109.6765
+          },
+          "southwest": {
+            "lat": 8.1952001,
+            "lng": 102.1439665
+          }
+        },
+        "location": {
+          "lat": 14.058324,
+          "lng": 108.277199
+        },
+        "location_type": "APPROXIMATE",
+        "viewport": {
+          "northeast": {
+            "lat": 23.3926504,
+            "lng": 109.6765
+          },
+          "southwest": {
+            "lat": 8.1952001,
+            "lng": 102.1439665
+          }
+        }
+      },
+      "place_id": "ChIJXx5qc016FTERvmL-4smwO7A",
+      "types": [
+        "country",
+        "political"
+      ]
+    }
+  ],
+  "status": "OK"
+}

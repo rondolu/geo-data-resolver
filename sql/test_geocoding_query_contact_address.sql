@@ -12,7 +12,7 @@
 -- FROM (
 --   SELECT
 --     "TEST_ERR_CONTACT_0001" AS serial_number,
---     "2026-04-10 09:00:00+00" AS created_at,
+--     "2026-05-17 09:00:00+00" AS created_at,
 --     "cuid-test-contact-0001" AS cuid,
 --     "" AS request_address,
 --     CAST(NULL AS FLOAT64) AS request_longitude,
@@ -20,7 +20,7 @@
 --   UNION ALL
 --   SELECT
 --     "TEST_ERR_CONTACT_0002" AS serial_number,
---     "2026-04-10 09:01:00+00" AS created_at,
+--     "2026-05-17 09:01:00+00" AS created_at,
 --     "cuid-test-contact-0002" AS cuid,
 --     null AS request_address,
 --     CAST(NULL AS FLOAT64) AS request_longitude,
@@ -34,7 +34,7 @@
 -- ORDER BY serial_number
 
 -- ============================================================
--- 測試發查名單 - contact_address (5筆符合 API request 要求) (2026-04-10)
+-- 測試發查名單 - contact_address (5筆符合 API request 要求) (2026-05-17)
 -- 目的：驗證地址 geocoding call 後能如預期回報對應的回應結果
 -- ============================================================
 
@@ -48,49 +48,49 @@ SELECT
   request_latitude
 FROM (
   SELECT
-    "TEST_CONTACT_0001" AS serial_number,
-    "2026-04-10 09:00:00+00" AS created_at,
-    DATE "2026-04-10" AS partition_date,
+    "TEST_CONTACT_0517_0001" AS serial_number,
+    "2026-05-17 09:00:00+00" AS created_at,
+    DATE "2026-05-17" AS partition_date,
     "cuid-test-contact-0001" AS cuid,
-    "Buôn Ciet, Ea Tiêu" AS request_address,
+    "BẤp Tân Bắc, xã Bình Minh" AS request_address,
     CAST(NULL AS FLOAT64) AS request_longitude,
     CAST(NULL AS FLOAT64) AS request_latitude
   UNION ALL
   SELECT
-    "TEST_CONTACT_0002" AS serial_number,
-    "2026-04-10 09:01:00+00" AS created_at,
-    DATE "2026-04-10" AS partition_date,
+    "TEST_CONTACT_0517_0002" AS serial_number,
+    "2026-05-17 09:01:00+00" AS created_at,
+    DATE "2026-05-17" AS partition_date,
     "cuid-test-contact-0002" AS cuid,
-    "XÃ THĂNG LONG" AS request_address,
+    "Thôn Nguyễn, An Đổ" AS request_address,
     CAST(NULL AS FLOAT64) AS request_longitude,
     CAST(NULL AS FLOAT64) AS request_latitude
-  UNION ALL
-  SELECT
-    "TEST_CONTACT_0003" AS serial_number,
-    "2026-04-10 09:02:00+00" AS created_at,
-    DATE "2026-04-10" AS partition_date,
-    "cuid-test-contact-0003" AS cuid,
-    "428/14 Luỹ Bán BíchHòa Thạnh" AS request_address,
-    CAST(NULL AS FLOAT64) AS request_longitude,
-    CAST(NULL AS FLOAT64) AS request_latitude
-  UNION ALL
-  SELECT
-    "TEST_CONTACT_0004" AS serial_number,
-    "2026-04-10 09:03:00+00" AS created_at,
-    DATE "2026-04-10" AS partition_date,
-    "cuid-test-contact-0004" AS cuid,
-    "Tổ 08, Nam Giang, Nam Trực, Nam Định" AS request_address,
-    CAST(NULL AS FLOAT64) AS request_longitude,
-    CAST(NULL AS FLOAT64) AS request_latitude
-  UNION ALL
-  SELECT
-    "TEST_CONTACT_0005" AS serial_number,
-    "2026-04-10 09:04:00+00" AS created_at,
-    DATE "2026-04-10" AS partition_date,
-    "cuid-test-contact-0005" AS cuid,
-    "THÔN 3, XÃ LỘC AN" AS request_address,
-    CAST(NULL AS FLOAT64) AS request_longitude,
-    CAST(NULL AS FLOAT64) AS request_latitude
+  -- UNION ALL
+  -- SELECT
+  --   "TEST_CONTACT_0003" AS serial_number,
+  --   "2026-05-17 09:02:00+00" AS created_at,
+  --   DATE "2026-05-18" AS partition_date,
+  --   "cuid-test-contact-0003" AS cuid,
+  --   "428/14 Luỹ Bán BíchHòa Thạnh" AS request_address,
+  --   CAST(NULL AS FLOAT64) AS request_longitude,
+  --   CAST(NULL AS FLOAT64) AS request_latitude
+  -- UNION ALL
+  -- SELECT
+  --   "TEST_CONTACT_0004" AS serial_number,
+  --   "2026-05-17 09:03:00+00" AS created_at,
+  --   DATE "2026-05-18" AS partition_date,
+  --   "cuid-test-contact-0004" AS cuid,
+  --   "Tổ 08, Nam Giang, Nam Trực, Nam Định" AS request_address,
+  --   CAST(NULL AS FLOAT64) AS request_longitude,
+  --   CAST(NULL AS FLOAT64) AS request_latitude
+  -- UNION ALL
+  -- SELECT
+  --   "TEST_CONTACT_0005" AS serial_number,
+  --   "2026-05-17 09:04:00+00" AS created_at,
+  --   DATE "2026-05-18" AS partition_date,
+  --   "cuid-test-contact-0005" AS cuid,
+  --   "THÔN 3, XÃ LỘC AN" AS request_address,
+  --   CAST(NULL AS FLOAT64) AS request_longitude,
+  --   CAST(NULL AS FLOAT64) AS request_latitude
 ) AS test_data
 WHERE NOT EXISTS (
   SELECT 1

@@ -97,8 +97,8 @@ SELECT
     b.cuid,
     b.serial_number,
 
-    CASE WHEN SAFE_CAST(b.contract_longitude AS FLOAT64) IS NULL THEN NULL ELSE CAST(ROUND(SAFE_CAST(b.contract_longitude AS FLOAT64), 4) AS STRING) END AS contract_longitude,
-    CASE WHEN SAFE_CAST(b.contract_latitude AS FLOAT64) IS NULL THEN NULL ELSE CAST(ROUND(SAFE_CAST(b.contract_latitude AS FLOAT64), 4) AS STRING) END AS contract_latitude,
+    CASE WHEN SAFE_CAST(b.contract_longitude AS FLOAT64) IS NULL THEN NULL ELSE CAST(SAFE_CAST(b.contract_longitude AS FLOAT64) AS STRING) END AS contract_longitude,
+    CASE WHEN SAFE_CAST(b.contract_latitude AS FLOAT64) IS NULL THEN NULL ELSE CAST(SAFE_CAST(b.contract_latitude AS FLOAT64) AS STRING) END AS contract_latitude,
     CASE WHEN b.contact_address IS NULL OR TRIM(CAST(b.contact_address AS STRING)) = '' THEN NULL ELSE CAST(b.contact_address AS STRING) END AS contact_address,
     CASE WHEN b.residence_address IS NULL OR TRIM(CAST(b.residence_address AS STRING)) = '' THEN NULL ELSE CAST(b.residence_address AS STRING) END AS residence_address,
 

@@ -12,7 +12,7 @@
 -- FROM (
 --   SELECT
 --     "TEST_ERR_RESIDENCE_0001" AS serial_number,
---     "2026-04-10 09:10:00+00" AS created_at,
+--     "2026-05-17 09:10:00+00" AS created_at,
 --     "cuid-test-residence-0001" AS cuid,
 --     "!@#$%^^^&&&&^%$" AS request_address,
 --     CAST(NULL AS FLOAT64) AS request_longitude,
@@ -20,7 +20,7 @@
 --   UNION ALL
 --   SELECT
 --     "TEST_ERR_RESIDENCE_0002" AS serial_number,
---     "2026-04-10 09:11:00+00" AS created_at,
+--     "2026-05-17 09:11:00+00" AS created_at,
 --     "cuid-test-residence-0002" AS cuid,
 --     "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz" AS request_address,
 --     CAST(NULL AS FLOAT64) AS request_longitude,
@@ -34,7 +34,7 @@
 -- ORDER BY serial_number
 
 -- ============================================================
--- 測試發查名單 - residence_address (5筆符合 API request 要求) (2026-04-10)
+-- 測試發查名單 - residence_address (5筆符合 API request 要求) (2026-05-17)
 -- 目的：驗證地址 geocoding call 後能如預期回報對應的回應結果
 -- ============================================================
 
@@ -48,49 +48,49 @@ SELECT
   request_latitude
 FROM (
   SELECT
-    "TEST_RESIDENCE_0001" AS serial_number,
-    "2026-04-10 09:10:00+00" AS created_at,
-    DATE "2026-04-10" AS partition_date,
+    "TEST_RESIDENCE_0517_0001" AS serial_number,
+    "2026-05-17 09:10:00+00" AS created_at,
+    DATE "2026-05-17" AS partition_date,
     "cuid-test-residence-0001" AS cuid,
-    "Ấp 2A Tân Hòa" AS request_address,
+    "Ấp Nhà Thờ, Trung Bình" AS request_address,
     CAST(NULL AS FLOAT64) AS request_longitude,
     CAST(NULL AS FLOAT64) AS request_latitude
   UNION ALL
   SELECT
-    "TEST_RESIDENCE_0002" AS serial_number,
-    "2026-04-10 09:11:00+00" AS created_at,
-    DATE "2026-04-10" AS partition_date,
+    "TEST_RESIDENCE_0517_0002" AS serial_number,
+    "2026-05-17 09:11:00+00" AS created_at,
+    DATE "2026-05-17" AS partition_date,
     "cuid-test-residence-0002" AS cuid,
-    "22 Trần Hưng Đạo, Phường 2, Sóc Trăng" AS request_address,
+    "Ấp Kiết Lợi, Lâm Kiết" AS request_address,
     CAST(NULL AS FLOAT64) AS request_longitude,
     CAST(NULL AS FLOAT64) AS request_latitude
-  UNION ALL
-  SELECT
-    "TEST_RESIDENCE_0003" AS serial_number,
-    "2026-04-10 09:12:00+00" AS created_at,
-    DATE "2026-04-10" AS partition_date,
-    "cuid-test-residence-0003" AS cuid,
-    "Số 55/46 Tôn Đức Thắng Khóm 5, Phường 6, TP. Sóc Trăng, Sóc Trăng" AS request_address,
-    CAST(NULL AS FLOAT64) AS request_longitude,
-    CAST(NULL AS FLOAT64) AS request_latitude
-  UNION ALL
-  SELECT
-    "TEST_RESIDENCE_0004" AS serial_number,
-    "2026-04-10 09:13:00+00" AS created_at,
-    DATE "2026-04-10" AS partition_date,
-    "cuid-test-residence-0004" AS cuid,
-    "XÃ THĂNG LONG 778" AS request_address,
-    CAST(NULL AS FLOAT64) AS request_longitude,
-    CAST(NULL AS FLOAT64) AS request_latitude
-  UNION ALL
-  SELECT
-    "TEST_RESIDENCE_0005" AS serial_number,
-    "2026-04-10 09:14:00+00" AS created_at,
-    DATE "2026-04-10" AS partition_date,
-    "cuid-test-residence-0005" AS cuid,
-    "Tổ 5 Khu 10, Nông Trang, 227, 25" AS request_address,
-    CAST(NULL AS FLOAT64) AS request_longitude,
-    CAST(NULL AS FLOAT64) AS request_latitude
+  -- UNION ALL
+  -- SELECT
+  --   "TEST_RESIDENCE_0003" AS serial_number,
+  --   "2026-05-17 09:12:00+00" AS created_at,
+  --   DATE "2026-05-18" AS partition_date,
+  --   "cuid-test-residence-0003" AS cuid,
+  --   "Số 55/46 Tôn Đức Thắng Khóm 5, Phường 6, TP. Sóc Trăng, Sóc Trăng" AS request_address,
+  --   CAST(NULL AS FLOAT64) AS request_longitude,
+  --   CAST(NULL AS FLOAT64) AS request_latitude
+  -- UNION ALL
+  -- SELECT
+  --   "TEST_RESIDENCE_0004" AS serial_number,
+  --   "2026-05-17 09:13:00+00" AS created_at,
+  --   DATE "2026-05-18" AS partition_date,
+  --   "cuid-test-residence-0004" AS cuid,
+  --   "XÃ THĂNG LONG 778" AS request_address,
+  --   CAST(NULL AS FLOAT64) AS request_longitude,
+  --   CAST(NULL AS FLOAT64) AS request_latitude
+  -- UNION ALL
+  -- SELECT
+  --   "TEST_RESIDENCE_0005" AS serial_number,
+  --   "2026-05-17 09:14:00+00" AS created_at,
+  --   DATE "2026-05-18" AS partition_date,
+  --   "cuid-test-residence-0005" AS cuid,
+  --   "Tổ 5 Khu 10, Nông Trang, 227, 25" AS request_address,
+  --   CAST(NULL AS FLOAT64) AS request_longitude,
+  --   CAST(NULL AS FLOAT64) AS request_latitude
 ) AS test_data
 WHERE NOT EXISTS (
   SELECT 1

@@ -18,7 +18,11 @@ from uuid import uuid4
 
 from application.batch_process_service import BatchContext, ProcessingResult
 from application.bigquery_service import BigQueryService
-from models.geocoding_models import extract_address_component, validate_geocoding_response
+from models.geocoding_models import (
+    extract_address_component,
+    extract_global_code,
+    validate_geocoding_response,
+)
 from modules.config import config
 from modules.exceptions import GoogleMapsAPIError, GeoDataError
 from services.google_maps_api_service import GoogleMapsAPIService
@@ -94,6 +98,10 @@ class GeocodingBatchProcessService:
 
     @Logging.logtobq(task_code="32")
     def _execute_update_sql(self, task_type: str) -> None:
+        if task_type == "contract_coordinates":
+            _logger.log_text("Skipping update SQL for contract_coordinates", severity="Info")
+            return
+
         try:
             sql_file = self.STAGE_SQL[task_type]["update"]
             sql = open(self._sql_path(sql_file), "r", encoding="utf-8").read()
@@ -175,8 +183,8 @@ class GeocodingBatchProcessService:
                     result.skipped_count += 1
                     continue
 
-                first_result = api_response["results"][0]
-                bq_rows.append(self._build_bq_row(task_type, record, first_result))
+                geocoding_first_result = api_response["results"][0]
+                bq_rows.append(self._build_bq_row(task_type, record, geocoding_first_result, api_response))
                 gcs_rows.append(
                     {
                         "serial_number": record.get("serial_number"),
@@ -231,18 +239,20 @@ class GeocodingBatchProcessService:
         self,
         task_type: str,
         source_record: Dict[str, Any],
-        geocoding_result: Dict[str, Any],
+        geocoding_first_result: Dict[str, Any],
+        api_full_response: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         now_utc = datetime.now(timezone.utc)
         bq_ts = now_utc.strftime("%Y-%m-%dT%H:%M:%S.%f")
         source_partition_date = source_record["partition_date"]
         target_partition_date = (source_partition_date + timedelta(days=1)).strftime("%Y-%m-%d")
 
-        geometry = geocoding_result.get("geometry", {})
+        geometry = geocoding_first_result.get("geometry", {})
         location = geometry.get("location", {}) if isinstance(geometry, dict) else {}
-        plus_code = geocoding_result.get("plus_code", {}) if isinstance(geocoding_result, dict) else {}
-        components = geocoding_result.get("address_components", []) if isinstance(geocoding_result, dict) else []
-        place_types = geocoding_result.get("types", []) if isinstance(geocoding_result, dict) else []
+        components = geocoding_first_result.get("address_components", []) if isinstance(geocoding_first_result, dict) else []
+        place_types = geocoding_first_result.get("types", []) if isinstance(geocoding_first_result, dict) else []
+        response_payload = api_full_response if isinstance(api_full_response, dict) else geocoding_first_result
+        global_code = extract_global_code(response_payload)
 
         request_longitude = source_record.get("request_longitude") if task_type == "contract_coordinates" else None
         request_latitude = source_record.get("request_latitude") if task_type == "contract_coordinates" else None
@@ -257,9 +267,9 @@ class GeocodingBatchProcessService:
             "REQUEST_LONGITUDE": request_longitude,
             "REQUEST_LATITUDE": request_latitude,
             "REQUEST_ADDRESS": request_address,
-            "RESPONSE_PLACE_ID": geocoding_result.get("place_id"),
-            "RESPONSE_ADDRESS": geocoding_result.get("formatted_address"),
-            "RESPONSE_GLOBAL_CODE": plus_code.get("global_code") if isinstance(plus_code, dict) else None,
+            "RESPONSE_PLACE_ID": geocoding_first_result.get("place_id"),
+            "RESPONSE_ADDRESS": geocoding_first_result.get("formatted_address"),
+            "RESPONSE_GLOBAL_CODE": global_code,
             "RESPONSE_PLACE_TYPES": ",".join(place_types) if isinstance(place_types, list) and place_types else None,
             "RESPONSE_LONGITUDE": str(location.get("lng")) if location.get("lng") is not None else None,
             "RESPONSE_LATITUDE": str(location.get("lat")) if location.get("lat") is not None else None,

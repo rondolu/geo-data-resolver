@@ -179,7 +179,10 @@ class GoogleMapsAPIClient:
             raise GoogleMapsAPIError("Either address or latlng is required", status_code=400)
 
         api_url = config.google_maps_geocoding_base_url
-        params: Dict[str, Any] = {"key": self.api_key}
+        params: Dict[str, Any] = {
+            "key": self.api_key,
+            "fulfill_on_zero_results": "true",
+        }
         if address:
             params["address"] = address
         if latlng:

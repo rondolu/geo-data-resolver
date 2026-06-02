@@ -16,6 +16,7 @@ latest_hes_customer AS (
   SELECT
     id,
     cuid,
+    current_application_id,
     permanent_detailed_address
   FROM `RAW_HES_DATASET.CUSTOMER`
   WHERE UPPER(COALESCE(permanent_detailed_address, 'NULL')) != 'NULL'
@@ -35,6 +36,7 @@ SELECT
 FROM latest_hes_application AS appl
 JOIN latest_hes_customer AS cust
   ON appl.customer_id = cust.id
+  AND appl.id = cust.current_application_id
 WHERE NOT EXISTS (
   SELECT 1
   FROM `RAW_EDEP_DATASET.GEOCODING` AS geo_coding
